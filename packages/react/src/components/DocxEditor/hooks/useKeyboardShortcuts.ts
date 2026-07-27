@@ -9,6 +9,7 @@ import type { useTableSelection } from '../../../hooks/useTableSelection';
 import type { useFindReplace } from '../../../hooks/useFindReplace';
 import type { useHyperlinkDialog } from '../../dialogs/HyperlinkDialog';
 import type { PagedEditorRef } from '../PagedEditor';
+import type { FormattingAction } from '../../Toolbar';
 
 /**
  * Top-level keyboard shortcuts:
@@ -16,11 +17,13 @@ import type { PagedEditorRef } from '../PagedEditor';
  *  - Cmd/Ctrl+F → open Find dialog (seeded with current selection)
  *  - Cmd/Ctrl+H → open Find/Replace dialog
  *  - Cmd/Ctrl+K → open Hyperlink dialog (edit if cursor sits on a link)
+ *  - Ctrl+Shift+C → copy formatting (format painter)
+ *  - Ctrl+Shift+V → paste formatting (format painter)
  *  - Delete/Backspace on a full-table layout selection → delete the table
  *
- * Listens on `document` so the shortcut works even when focus isn't in the
- * editor. `disableFindReplaceShortcuts` lets the host app reclaim Cmd+F /
- * Cmd+H when the editor is embedded inside another shell.
+ * Format painter shortcuts use capture-phase listeners on `window` so they
+ * fire before the browser interprets Ctrl+Shift+C (Chrome DevTools).
+ * Remaining shortcuts listen on `document` at bubble phase — standard.
  */
 export function useKeyboardShortcuts({
   pagedEditorRef,
@@ -30,6 +33,7 @@ export function useKeyboardShortcuts({
   findReplace,
   hyperlinkDialog,
   tableSelection,
+  onFormat,
 }: {
   pagedEditorRef: React.RefObject<PagedEditorRef | null>;
   disableFindReplaceShortcuts: boolean;
@@ -38,7 +42,49 @@ export function useKeyboardShortcuts({
   findReplace: ReturnType<typeof useFindReplace>;
   hyperlinkDialog: ReturnType<typeof useHyperlinkDialog>;
   tableSelection: ReturnType<typeof useTableSelection>;
+  onFormat?: React.MutableRefObject<((action: FormattingAction) => void) | undefined>;
 }) {
+  // ── Format painter shortcuts (capture phase on window) ──────────────
+  // Must be on window with capture=true so we beat the browser's built-in
+  // Ctrl+Shift+C handler (Chrome DevTools element selector).
+  useEffect(() => {
+    const handleCaptureKeyDown = (e: KeyboardEvent) => {
+      const ctrl = e.ctrlKey || e.metaKey;
+      if (!ctrl || !e.shiftKey || e.altKey) return;
+
+      if (e.code === 'KeyC') {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        e.stopPropagation();
+        onFormat?.current?.('formatPainterCopy');
+      } else if (e.code === 'KeyV') {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        e.stopPropagation();
+        onFormat?.current?.('formatPainterPaste');
+      }
+    };
+
+    // Also swallow keyup to prevent Chrome's shortcut from firing on keyup
+    const handleCaptureKeyUp = (e: KeyboardEvent) => {
+      const ctrl = e.ctrlKey || e.metaKey;
+      if (!ctrl || !e.shiftKey || e.altKey) return;
+      if (e.code === 'KeyC' || e.code === 'KeyV') {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        e.stopPropagation();
+      }
+    };
+
+    window.addEventListener('keydown', handleCaptureKeyDown, { capture: true });
+    window.addEventListener('keyup', handleCaptureKeyUp, { capture: true });
+    return () => {
+      window.removeEventListener('keydown', handleCaptureKeyDown, { capture: true });
+      window.removeEventListener('keyup', handleCaptureKeyUp, { capture: true });
+    };
+  }, [onFormat]);
+
+  // ── General editor shortcuts (bubble phase on document) ─────────────
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;

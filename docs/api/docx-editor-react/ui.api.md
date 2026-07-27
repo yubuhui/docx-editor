@@ -1198,6 +1198,7 @@ export interface ToolbarProps {
     editorRef?: React__default.RefObject<HTMLElement>;
     enableShortcuts?: boolean;
     fontFamilies?: ReadonlyArray<string | FontOption>;
+    formatPainterActive?: boolean;
     imageContext?: {
         wrapType: string;
         displayMode: string;

@@ -198,6 +198,7 @@ export interface PageSetupDialogProps {
     onApply: (props: Partial<SectionProperties>) => void;
     // (undocumented)
     onClose: () => void;
+    unit?: 'inch' | 'cm';
 }
 
 // @public

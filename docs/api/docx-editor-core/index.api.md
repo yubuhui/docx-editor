@@ -184,6 +184,9 @@ export interface CellCoordinates {
 }
 
 // @public
+export function charsToTwips(chars: number, fontSizeHalfPts: number): number;
+
+// @public
 export interface ClipboardSelection {
     // (undocumented)
     endOffset: number;
@@ -1874,6 +1877,9 @@ export type TrackedRunChange = Insertion | Deletion | MoveFrom | MoveTo;
 
 // @public
 export function triggerPrint(): void;
+
+// @public
+export function twipsToChars(twips: number, fontSizeHalfPts: number): number;
 
 // @public
 export function twipsToEmu(twips: number): number;

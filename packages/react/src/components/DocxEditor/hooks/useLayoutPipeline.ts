@@ -408,7 +408,7 @@ export function useLayoutPipeline(opts: UseLayoutPipelineOptions): UseLayoutPipe
         applyPendingIncrementalScrollSnapshot(false);
 
         const totalTime = performance.now() - pipelineStart;
-        if (totalTime > 2000) {
+        if (totalTime > 2000 && process.env.NODE_ENV !== 'production') {
           console.warn(
             `[PagedEditor] Layout pipeline took ${Math.round(totalTime)}ms total ` +
               `(${newBlocks.length} blocks, ${newMeasures.length} measures)`

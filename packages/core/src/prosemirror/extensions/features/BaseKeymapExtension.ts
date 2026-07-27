@@ -91,6 +91,11 @@ const INHERITED_PARA_ATTRS = [
   'spaceAfter',
   'spaceBefore',
   'contextualSpacing',
+  'alignment',
+  'indentLeft',
+  'indentRight',
+  'indentFirstLine',
+  'hangingIndent',
 ] as const;
 
 /** Mark types that represent style-inherited formatting (font, size, color). */

@@ -8,6 +8,9 @@
 export const AUTO_PARAGRAPH_SPACING_PX = 14;
 
 // @public
+export function charsToTwips(chars: number, fontSizeHalfPts: number): number;
+
+// @public
 export function clamp(value: number, min: number, max: number): number;
 
 // @public
@@ -47,7 +50,13 @@ export function pointsToPixels(points: number): number;
 export function roundPixels(px: number, decimalPlaces?: number): number;
 
 // @public
+export const TWIPS_PER_CM: number;
+
+// @public
 export const TWIPS_PER_INCH = 1440;
+
+// @public
+export function twipsToChars(twips: number, fontSizeHalfPts: number): number;
 
 // @public
 export function twipsToEmu(twips: number): number;

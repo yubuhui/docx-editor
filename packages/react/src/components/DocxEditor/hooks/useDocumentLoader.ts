@@ -75,7 +75,9 @@ export function useDocumentLoader({
       history.reset(doc);
       setLoadingState({ isLoading: false, parseError: null });
       loadDocumentFonts(doc).catch((err) => {
-        console.warn('Failed to load document fonts:', err);
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('Failed to load document fonts:', err);
+        }
       });
       // Offer the document's own renderable fonts (embedded faces are loaded by
       // parseDocx; system fonts are probed) in the picker.

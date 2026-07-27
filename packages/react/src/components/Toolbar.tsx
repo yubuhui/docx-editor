@@ -107,6 +107,8 @@ export type FormattingAction =
   | 'insertLink'
   | 'setRtl'
   | 'setLtr'
+  | 'formatPainterCopy'
+  | 'formatPainterPaste'
   | { type: 'fontFamily'; value: string }
   | { type: 'fontSize'; value: number }
   | { type: 'textColor'; value: ColorValue | string }
@@ -196,6 +198,8 @@ export interface ToolbarProps {
   onInsertTable?: (rows: number, columns: number) => void;
   /** Whether to show table insert button (default: true) */
   showTableInsert?: boolean;
+  /** Whether format painter is active (has copied formatting) */
+  formatPainterActive?: boolean;
   /** Whether to show the Help menu in the menu bar (default: true) */
   showHelpMenu?: boolean;
   /** Callback when user wants to insert an image */
@@ -435,6 +439,7 @@ export function Toolbar(explicitProps: ToolbarProps) {
     tableContext,
     onTableAction,
     inline = false,
+    formatPainterActive = false,
   } = props;
 
   const barRef = useRef<HTMLDivElement>(null);
@@ -584,6 +589,20 @@ export function Toolbar(explicitProps: ToolbarProps) {
       if (!isInEditor && !isInBar) return;
 
       const isCtrl = event.ctrlKey || event.metaKey;
+      const isShift = event.shiftKey;
+
+      if (isCtrl && isShift && !event.altKey) {
+        switch (event.key.toLowerCase()) {
+          case 'c':
+            event.preventDefault();
+            handleFormat('formatPainterCopy');
+            return;
+          case 'v':
+            event.preventDefault();
+            handleFormat('formatPainterPaste');
+            return;
+        }
+      }
 
       if (isCtrl && !event.altKey) {
         switch (event.key.toLowerCase()) {
@@ -934,6 +953,17 @@ export function Toolbar(explicitProps: ToolbarProps) {
           />
         </ToolbarGroup>
       )}
+
+      {/* Format Painter */}
+      <ToolbarButton
+        onClick={() => handleFormat(formatPainterActive ? 'formatPainterPaste' : 'formatPainterCopy')}
+        disabled={disabled}
+        title={formatPainterActive ? t('formattingBar.formatPainterPaste') : t('formattingBar.formatPainterCopy')}
+        ariaLabel={formatPainterActive ? t('formattingBar.formatPainterPaste') : t('formattingBar.formatPainterCopy')}
+        active={formatPainterActive}
+      >
+        <MaterialSymbol name="format_paint" size={ICON_SIZE} />
+      </ToolbarButton>
 
       {/* Clear Formatting */}
       <ToolbarButton

@@ -903,6 +903,9 @@ export interface ThemeMatrixCell {
 export function toArrayBuffer(input: DocxInput): Promise<ArrayBuffer>;
 
 // @public
+export const TWIPS_PER_CM: number;
+
+// @public
 export const TWIPS_PER_INCH = 1440;
 
 // @public

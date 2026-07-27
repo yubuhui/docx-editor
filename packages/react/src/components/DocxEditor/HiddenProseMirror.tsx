@@ -140,6 +140,48 @@ const HIDDEN_HOST_STYLES: CSSProperties = {
 // ============================================================================
 
 /**
+ * Find the painted caret element (rendered by SelectionOverlay) and return
+ * its viewport coordinates. The IME candidate window anchors to the real
+ * browser selection inside the hidden PM, so we reposition the hidden PM
+ * host to these coordinates during composition.
+ */
+function getPaintedCaretRect(): { left: number; top: number; height: number } | null {
+  if (typeof document === 'undefined') return null;
+  // The SelectionOverlay renders a <div data-testid="caret"> for collapsed
+  // selections. Fall back to the selection-overlay container's first child.
+  let caret = document.querySelector('[data-testid="caret"]');
+  if (!caret || caret.getBoundingClientRect().width === 0) {
+    const overlay = document.querySelector('[data-testid="selection-overlay"]');
+    if (overlay) {
+      const child = overlay.firstElementChild as HTMLElement | null;
+      if (child && child.style.position === 'absolute') caret = child;
+    }
+  }
+  if (caret) {
+    const rect = caret.getBoundingClientRect();
+    if (rect.width !== 0 || rect.height !== 0) {
+      return { left: rect.left, top: rect.top, height: rect.height };
+    }
+  }
+
+  // Fallback: no painted caret yet (overlay not rendered, or the caret is
+  // scrolled out of view). Without a position the hidden PM stays at
+  // left:-9999px and the IME candidate window renders off-screen — so anchor
+  // to the visible pages container instead. Approximate, but keeps the
+  // candidate popup on screen and near the document.
+  const pages = document.querySelector('.paged-editor__pages');
+  if (pages) {
+    const rect = pages.getBoundingClientRect();
+    // Clamp into the viewport in case the container is partly scrolled off.
+    const left = Math.min(Math.max(rect.left, 0), window.innerWidth - 1);
+    const top = Math.min(Math.max(rect.top, 0), window.innerHeight - 1);
+    return { left, top, height: 20 };
+  }
+
+  return null;
+}
+
+/**
  * Create ProseMirror state from document
  *
  * When an ExtensionManager is provided, it supplies the schema and plugins.
@@ -230,6 +272,10 @@ const HiddenProseMirrorComponent = forwardRef<HiddenProseMirrorRef, HiddenProseM
     const lastDocumentIdRef = useRef<string | null>(null);
     // Track if we've initialized - first render needs to set up state
     const isInitializedRef = useRef(false);
+    // Track IME composition state — the host is repositioned during
+    // composition (see handleDOMEvents.compositionstart/end) so the
+    // IME candidate window appears at the visible caret.
+    const composingRef = useRef(false);
 
     // Store callbacks in refs to avoid dependency array issues that cause infinite loops
     // when the parent component passes unstable callback references
@@ -323,6 +369,63 @@ const HiddenProseMirrorComponent = forwardRef<HiddenProseMirrorRef, HiddenProseM
           },
           blur: () => {
             // Let blur happen normally
+            return false;
+          },
+          // ── IME composition: reposition hidden host to visible caret ──
+          // The hidden PM sits at left:-9999px. Browsers anchor the IME
+          // candidate window to the real DOM selection (inside the hidden
+          // PM), so without repositioning the candidate popup appears
+          // off-screen. On compositionstart we move the host so that the
+          // PM's internal selection aligns with the painted caret on
+          // screen; on compositionend we restore it after a rAF (gives PM
+          // time to commit the text and set the correct selection before
+          // the host moves back).
+          compositionstart: () => {
+            const hostEl = hostRef.current;
+            if (!hostEl) return false;
+            composingRef.current = true;
+
+            // Calculate the offset to align PM's internal selection with
+            // the painted caret. Simply moving the host to the painted
+            // caret position is inaccurate because the PM's selection has
+            // an internal offset within the host. We need:
+            //   host_new = paintedCaret - (pmSelection - hostCurrent)
+            const paintedCaret = getPaintedCaretRect();
+            if (paintedCaret) {
+              const hostRect = hostEl.getBoundingClientRect();
+              // Get the PM selection's screen position
+              const sel = window.getSelection();
+              let pmSelLeft = hostRect.left;
+              let pmSelTop = hostRect.top;
+              if (sel && sel.rangeCount > 0) {
+                const range = sel.getRangeAt(0);
+                const rect = range.getBoundingClientRect();
+                if (rect.width > 0 || rect.height > 0) {
+                  pmSelLeft = rect.left;
+                  pmSelTop = rect.top;
+                }
+              }
+              // Offset the host so the PM selection aligns with painted caret
+              const deltaX = paintedCaret.left - pmSelLeft;
+              const deltaY = paintedCaret.top - pmSelTop;
+              hostEl.style.left = (hostRect.left + deltaX) + 'px';
+              hostEl.style.top = (hostRect.top + deltaY) + 'px';
+            }
+            return false;
+          },
+          compositionend: () => {
+            composingRef.current = false;
+            // Defer host restore: PM's compositionend handler + the commit
+            // transaction need to run before we move the host back to
+            // -9999px. requestAnimationFrame ensures we restore only after
+            // the current event loop + layout tick.
+            requestAnimationFrame(() => {
+              const hostEl = hostRef.current;
+              if (!hostEl) return;
+              if (composingRef.current) return; // new composition started
+              hostEl.style.left = HIDDEN_HOST_STYLES.left as string;
+              hostEl.style.top = HIDDEN_HOST_STYLES.top as string;
+            });
             return false;
           },
         },

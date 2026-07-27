@@ -10,7 +10,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import type { CSSProperties } from 'react';
 import type { SectionProperties } from '@eigenpal/docx-editor-core/types/document';
-import { TWIPS_PER_INCH } from '@eigenpal/docx-editor-core/utils';
+import { TWIPS_PER_INCH, TWIPS_PER_CM } from '@eigenpal/docx-editor-core/utils';
 import { useTranslation } from '../../i18n';
 
 /** Common page sizes in twips (width x height in portrait orientation) */
@@ -33,18 +33,34 @@ export interface PageSetupDialogProps {
   onClose: () => void;
   onApply: (props: Partial<SectionProperties>) => void;
   currentProps?: SectionProperties;
+  /** Display unit for margins (default: 'inch') */
+  unit?: 'inch' | 'cm';
 }
 
 // ============================================================================
 // HELPERS
 // ============================================================================
 
-function twipsToInches(twips: number): number {
-  return Math.round((twips / TWIPS_PER_INCH) * 100) / 100;
+function twipsToUnit(twips: number, unit: 'inch' | 'cm'): number {
+  const perUnit = unit === 'cm' ? TWIPS_PER_CM : TWIPS_PER_INCH;
+  return Math.round((twips / perUnit) * 100) / 100;
 }
 
-function inchesToTwips(inches: number): number {
-  return Math.round(inches * TWIPS_PER_INCH);
+function unitToTwips(value: number, unit: 'inch' | 'cm'): number {
+  const perUnit = unit === 'cm' ? TWIPS_PER_CM : TWIPS_PER_INCH;
+  return Math.round(value * perUnit);
+}
+
+function maxForUnit(unit: 'inch' | 'cm'): number {
+  return unit === 'cm' ? 25 : 10;
+}
+
+function stepForUnit(unit: 'inch' | 'cm'): number {
+  return unit === 'cm' ? 0.1 : 0.1;
+}
+
+function getUnitLabel(unit: 'inch' | 'cm'): string {
+  return unit === 'cm' ? 'cm' : 'in';
 }
 
 /** Find matching page size preset, ignoring orientation */
@@ -164,8 +180,13 @@ export function PageSetupDialog({
   onClose,
   onApply,
   currentProps,
+  unit = 'inch',
 }: PageSetupDialogProps): React.ReactElement | null {
   const { t } = useTranslation();
+  const u = unit;
+  const unitLabel = getUnitLabel(u);
+  const maxVal = maxForUnit(u);
+  const stepVal = stepForUnit(u);
   const [pageWidth, setPageWidth] = useState(DEFAULT_WIDTH);
   const [pageHeight, setPageHeight] = useState(DEFAULT_HEIGHT);
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
@@ -301,12 +322,12 @@ export function PageSetupDialog({
               type="number"
               style={inputStyle}
               min={0}
-              max={10}
-              step={0.1}
-              value={twipsToInches(marginTop)}
-              onChange={(e) => setMarginTop(inchesToTwips(Number(e.target.value) || 0))}
+              max={maxVal}
+              step={stepVal}
+              value={twipsToUnit(marginTop, u)}
+              onChange={(e) => setMarginTop(unitToTwips(Number(e.target.value) || 0, u))}
             />
-            <span style={unitStyle}>in</span>
+            <span style={unitStyle}>{unitLabel}</span>
           </div>
 
           <div style={rowStyle}>
@@ -315,12 +336,12 @@ export function PageSetupDialog({
               type="number"
               style={inputStyle}
               min={0}
-              max={10}
-              step={0.1}
-              value={twipsToInches(marginBottom)}
-              onChange={(e) => setMarginBottom(inchesToTwips(Number(e.target.value) || 0))}
+              max={maxVal}
+              step={stepVal}
+              value={twipsToUnit(marginBottom, u)}
+              onChange={(e) => setMarginBottom(unitToTwips(Number(e.target.value) || 0, u))}
             />
-            <span style={unitStyle}>in</span>
+            <span style={unitStyle}>{unitLabel}</span>
           </div>
 
           <div style={rowStyle}>
@@ -329,12 +350,12 @@ export function PageSetupDialog({
               type="number"
               style={inputStyle}
               min={0}
-              max={10}
-              step={0.1}
-              value={twipsToInches(marginLeft)}
-              onChange={(e) => setMarginLeft(inchesToTwips(Number(e.target.value) || 0))}
+              max={maxVal}
+              step={stepVal}
+              value={twipsToUnit(marginLeft, u)}
+              onChange={(e) => setMarginLeft(unitToTwips(Number(e.target.value) || 0, u))}
             />
-            <span style={unitStyle}>in</span>
+            <span style={unitStyle}>{unitLabel}</span>
           </div>
 
           <div style={rowStyle}>
@@ -343,12 +364,12 @@ export function PageSetupDialog({
               type="number"
               style={inputStyle}
               min={0}
-              max={10}
-              step={0.1}
-              value={twipsToInches(marginRight)}
-              onChange={(e) => setMarginRight(inchesToTwips(Number(e.target.value) || 0))}
+              max={maxVal}
+              step={stepVal}
+              value={twipsToUnit(marginRight, u)}
+              onChange={(e) => setMarginRight(unitToTwips(Number(e.target.value) || 0, u))}
             />
-            <span style={unitStyle}>in</span>
+            <span style={unitStyle}>{unitLabel}</span>
           </div>
         </div>
 

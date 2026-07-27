@@ -82,6 +82,8 @@
     "imageProperties": "图片属性",
     "imagePropertiesShortcut": "图片属性(替代文本、边框)...",
     "clearFormatting": "清除格式",
+    "formatPainterCopy": "复制格式 (Ctrl+Shift+C)",
+    "formatPainterPaste": "粘贴格式 (Ctrl+Shift+V)",
     "commentsAndChanges": null,
     "moreItems": null
   },
@@ -373,13 +375,13 @@
       "left": "左",
       "right": "右",
       "pageSizes": {
-        "letter": "信纸 (8.5\" × 11\")",
-        "a4": "A4 (8.27\" × 11.69\")",
-        "legal": "法律专用纸 (8.5\" × 14\")",
-        "a3": "A3 (11.69\" × 16.54\")",
-        "a5": "A5 (5.83\" × 8.27\")",
-        "b5": "B5 (6.93\" × 9.84\")",
-        "executive": "Executive (7.25\" × 10.5\")"
+        "letter": "信纸 (21.6 × 27.9 cm)",
+        "a4": "A4 (21.0 × 29.7 cm)",
+        "legal": "法律专用纸 (21.6 × 35.6 cm)",
+        "a3": "A3 (29.7 × 42.0 cm)",
+        "a5": "A5 (14.8 × 21.0 cm)",
+        "b5": "B5 (17.6 × 25.0 cm)",
+        "executive": "Executive (18.4 × 26.7 cm)"
       }
     },
     "tableProperties": {

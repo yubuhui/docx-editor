@@ -101,6 +101,7 @@ export function DocxEditorDialogs({
   footnotePropsOpen,
   onFootnotePropsClose,
   onApplyFootnoteProperties,
+  rulerUnit,
 }: {
   // Find/Replace
   findReplace: ReturnType<typeof useFindReplace>;
@@ -146,6 +147,8 @@ export function DocxEditorDialogs({
   footnotePropsOpen: boolean;
   onFootnotePropsClose: () => void;
   onApplyFootnoteProperties: (footnotePr: FootnoteProperties, endnotePr: EndnoteProperties) => void;
+  /** Display unit for page setup margins */
+  rulerUnit?: 'inch' | 'cm';
 }) {
   return (
     <Suspense fallback={null}>
@@ -230,6 +233,7 @@ export function DocxEditorDialogs({
           onClose={onPageSetupClose}
           onApply={onPageSetupApply}
           currentProps={document?.package.document?.finalSectionProperties}
+          unit={rulerUnit}
         />
       )}
       {showWatermark && (

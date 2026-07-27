@@ -23,6 +23,9 @@ const STANDARD_DPI = 96;
 /** Twips per inch (1 inch = 1440 twips) */
 export const TWIPS_PER_INCH = 1440;
 
+/** Twips per cm (1 inch = 2.54 cm) */
+export const TWIPS_PER_CM = TWIPS_PER_INCH / 2.54;
+
 /** EMUs per inch (1 inch = 914400 EMUs) */
 const EMUS_PER_INCH = 914400;
 
@@ -186,4 +189,66 @@ export function clamp(value: number, min: number, max: number): number {
  */
 export function formatPx(px: number): string {
   return `${roundPixels(px)}px`;
+}
+
+// ============================================================================
+// CHARACTER-BASED UNITS
+// ============================================================================
+
+/**
+ * Convert a character count to twips based on a font size in half-points.
+ * In Word, 1 "character" ≈ the average width at the current font size.
+ *
+ * We approximate character width as follows (matching OOXML's implicit model):
+ *   - For East Asian (Chinese/Japanese/Korean) and monospace contexts:
+ *     1 char ≈ 1 em ≈ font size in points
+ *   - For proportional Latin (default assumption):
+ *     1 char ≈ 0.5 em ≈ 0.5 × font size in points
+ *
+ * The `script` hint lets callers choose the model. Default ('auto') uses
+ * the proportional-Latin estimate (0.5 em) for backwards compatibility with
+ * the original lawyer_assistant fork's indent logic. When working with
+ * Chinese documents (首行缩进 2 字符 = 2 em at the current font size), pass
+ * `script: 'eastAsian'` to get the correct 1-em-per-char estimate.
+ *
+ * Formula:
+ *   - East Asian/monospace: chars × fontSizeHalfPts / 2 × 20 = chars × fontSizeHalfPts × 10
+ *   - Proportional Latin:   chars × (fontSizeHalfPts / 2 × 0.5) × 20 = chars × fontSizeHalfPts × 5
+ *
+ * @param chars - Number of characters (e.g., 2 for a standard Chinese indent)
+ * @param fontSizeHalfPts - Font size in half-points (e.g., 24 = 12pt)
+ * @param script - Character-width model: 'eastAsian' (1 em) or 'latin' (0.5 em);
+ *                 default 'auto' = 'latin' for backwards compatibility
+ * @returns Width in twips
+ */
+export function charsToTwips(
+  chars: number,
+  fontSizeHalfPts: number,
+  script: 'eastAsian' | 'latin' | 'auto' = 'auto'
+): number {
+  const model = script === 'auto' ? 'latin' : script;
+  const multiplier = model === 'eastAsian' ? 10 : 5;
+  return Math.round(chars * fontSizeHalfPts * multiplier);
+}
+
+/**
+ * Convert twips to character count at a given font size in half-points.
+ * Inverse of charsToTwips. Defaults to the proportional-Latin estimate
+ * (0.5 em per char) for consistency with the default charsToTwips behavior.
+ *
+ * @param twips - Width in twips
+ * @param fontSizeHalfPts - Font size in half-points (e.g., 24 = 12pt)
+ * @param script - Character-width model: 'eastAsian' (1 em) or 'latin' (0.5 em);
+ *                 default 'auto' = 'latin'
+ * @returns Number of characters
+ */
+export function twipsToChars(
+  twips: number,
+  fontSizeHalfPts: number,
+  script: 'eastAsian' | 'latin' | 'auto' = 'auto'
+): number {
+  if (fontSizeHalfPts <= 0) return 0;
+  const model = script === 'auto' ? 'latin' : script;
+  const multiplier = model === 'eastAsian' ? 10 : 5;
+  return Math.round(twips / (fontSizeHalfPts * multiplier));
 }

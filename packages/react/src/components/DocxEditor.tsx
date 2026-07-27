@@ -14,7 +14,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import type { Document, Theme } from '@eigenpal/docx-editor-core/types/document';
 
 import { cn } from '../lib/utils';
-import { type SelectionFormatting } from './Toolbar';
+import { type SelectionFormatting, type FormattingAction } from './Toolbar';
 import type { AgentPanelOptions } from './DocxEditor/types';
 import { useOutlineSidebar } from './DocxEditor/hooks/useOutlineSidebar';
 import { useKeyboardShortcuts } from './DocxEditor/hooks/useKeyboardShortcuts';
@@ -1062,6 +1062,9 @@ export const DocxEditor = forwardRef<DocxEditorRef, DocxEditorProps>(function Do
     },
   });
 
+  // Format action ref — set later by useFormattingActions, consumed by keyboard shortcuts
+  const handleFormatRef = useRef<((action: FormattingAction) => void) | undefined>(undefined);
+
   useKeyboardShortcuts({
     pagedEditorRef,
     disableFindReplaceShortcuts,
@@ -1070,6 +1073,7 @@ export const DocxEditor = forwardRef<DocxEditorRef, DocxEditorProps>(function Do
     findReplace,
     hyperlinkDialog,
     tableSelection,
+    onFormat: handleFormatRef,
   });
 
   // Handle table insert from toolbar
@@ -1143,6 +1147,7 @@ export const DocxEditor = forwardRef<DocxEditorRef, DocxEditorProps>(function Do
     handleInsertSectionBreakNextPage,
     handleInsertSectionBreakContinuous,
     handleInsertTOC,
+    formatPainterActive,
   } = useFormattingActions({
     getActiveEditorView,
     focusActiveEditor,
@@ -1152,6 +1157,9 @@ export const DocxEditor = forwardRef<DocxEditorRef, DocxEditorProps>(function Do
     historyStateRef,
     getCachedStyleResolver,
   });
+
+  // Wire the format handler into the keyboard shortcuts ref
+  handleFormatRef.current = handleFormat;
 
   const handleZoomChange = useCallback((zoom: number) => {
     setState((prev) => ({ ...prev, zoom }));
@@ -1831,6 +1839,7 @@ export const DocxEditor = forwardRef<DocxEditorRef, DocxEditorProps>(function Do
             onPageSetup={handleOpenPageSetup}
             onWatermark={handleOpenWatermark}
             onTableAction={handleTableAction}
+            formatPainterActive={formatPainterActive}
           />
         ) : null
       }
@@ -1969,6 +1978,7 @@ export const DocxEditor = forwardRef<DocxEditorRef, DocxEditorProps>(function Do
           footnotePropsOpen={footnotePropsOpen}
           onFootnotePropsClose={() => setFootnotePropsOpen(false)}
           onApplyFootnoteProperties={handleApplyFootnoteProperties}
+          rulerUnit={rulerUnit}
         />
       }
       fileInputs={

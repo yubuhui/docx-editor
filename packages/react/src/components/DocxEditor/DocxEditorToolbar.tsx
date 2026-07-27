@@ -94,6 +94,7 @@ export function DocxEditorToolbar({
   onPageSetup,
   onWatermark,
   onTableAction,
+  formatPainterActive,
 }: {
   toolbarRefCallback: (el: HTMLDivElement | null) => void;
   agentPanelOpen: boolean;
@@ -143,6 +144,7 @@ export function DocxEditorToolbar({
   onPageSetup: () => void;
   onWatermark: () => void;
   onTableAction: (action: TableAction) => void;
+  formatPainterActive?: boolean;
 }) {
   // Radius transition matches the agent panel's open/close so the seam
   // between toolbar bottom-right and panel top-left is smooth.
@@ -189,6 +191,7 @@ export function DocxEditorToolbar({
         onWatermark={onWatermark}
         tableContext={tableContext}
         onTableAction={onTableAction}
+        formatPainterActive={formatPainterActive}
       >
         <EditorToolbar.TitleBar>
           {renderLogo && <EditorToolbar.Logo>{renderLogo()}</EditorToolbar.Logo>}

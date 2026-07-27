@@ -82,6 +82,8 @@
     "imageProperties": "Image properties",
     "imagePropertiesShortcut": "Image properties (alt text, border)...",
     "clearFormatting": "Clear formatting",
+    "formatPainterCopy": "Copy formatting (Ctrl+Shift+C)",
+    "formatPainterPaste": "Paste formatting (Ctrl+Shift+V)",
     "commentsAndChanges": "Comments & Changes",
     "moreItems": "{count, plural, one {# more item} other {# more items}}"
   },

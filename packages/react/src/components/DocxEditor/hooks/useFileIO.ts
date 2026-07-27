@@ -110,12 +110,16 @@ export function useFileIO({
 
         const buffer = await agentRef.current.toBuffer(selectiveOptions);
 
-        // Clear change tracker after successful save
+        // Hand the buffer to the host first. If `onSave` throws (failed write,
+        // network error), the change tracker must stay intact so the user can
+        // retry — clearing it first would make the retry a no-op save.
+        onSave?.(buffer);
+
+        // Clear change tracker only after the host accepted the buffer.
         if (view) {
           view.dispatch(clearTrackedChanges(view.state));
         }
 
-        onSave?.(buffer);
         return buffer;
       } catch (error) {
         onError?.(toFileIOError(error, 'Failed to save document'));
@@ -137,14 +141,6 @@ export function useFileIO({
     // Virtualization keeps off-screen pages as empty shells. Without this
     // they clone as blank pages in the print output (issue #579).
     renderAllPagesNow(pagesEl as HTMLElement);
-
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      // Popup blocked — fall back to window.print()
-      window.print();
-      onPrint?.();
-      return;
-    }
 
     // Collect all @font-face rules from the current page
     const fontFaceRules: string[] = [];
@@ -169,37 +165,79 @@ export function useFileIO({
       el.style.margin = '0';
     }
 
-    printWindow.document.write(`<!DOCTYPE html>
+    // Use a hidden iframe instead of window.open() — avoids popup
+    // blocking and the brief flash of a new tab (issue in embedded editors).
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText =
+      'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none;border:none;';
+    iframe.src = 'about:blank';
+    document.body.appendChild(iframe);
+
+    let loadFired = false;
+    const cleanup = () => {
+      if (iframe.parentNode) document.body.removeChild(iframe);
+    };
+
+    // Timeout fallback: if the iframe load never fires (extension/policy block),
+    // remove it and fall back to window.print() so the user isn't left with a
+    // permanent DOM leak and no print.
+    const fallbackTimer = setTimeout(() => {
+      if (loadFired) return;
+      cleanup();
+      window.print();
+      onPrint?.();
+    }, 3000);
+
+    const onIframeLoad = () => {
+      loadFired = true;
+      clearTimeout(fallbackTimer);
+
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+      if (!iframeDoc) {
+        cleanup();
+        window.print();
+        onPrint?.();
+        return;
+      }
+
+      // @page margin: 5mm covers most printers' non-printable zone (3-5mm)
+      // while still being compact. The layout engine already added document
+      // margins, so this is just the hardware safety border.
+      iframeDoc.write(`<!DOCTYPE html>
 <html><head><title>Print</title>
 <style>
 * { margin: 0; padding: 0; }
 body { background: white; }
 .layout-page { break-after: page; }
 .layout-page:last-child { break-after: auto; }
-@page { margin: 0; size: auto; }
+@page { margin: 5mm; size: auto; }
 </style>
 </head><body></body></html>`);
 
-    const fontStyleEl = printWindow.document.createElement('style');
-    fontStyleEl.textContent = fontFaceRules.join('\n');
-    printWindow.document.head.appendChild(fontStyleEl);
-    printWindow.document.body.appendChild(printWindow.document.importNode(pagesClone, true));
-    printWindow.document.close();
+      const fontStyleEl = iframeDoc.createElement('style');
+      fontStyleEl.textContent = fontFaceRules.join('\n');
+      iframeDoc.head.appendChild(fontStyleEl);
+      iframeDoc.body.appendChild(iframeDoc.importNode(pagesClone, true));
+      iframeDoc.close();
 
-    // Wait for fonts/images then print
-    printWindow.onload = () => {
-      printWindow.print();
-      printWindow.close();
+      // Wait for fonts/images then print
+      const doPrint = () => {
+        iframe.contentWindow?.print();
+        setTimeout(cleanup, 500);
+      };
+
+      // Try onload; fall back to timer if fonts don't trigger it
+      let printed = false;
+      const tryPrintOnce = () => {
+        if (printed) return;
+        printed = true;
+        doPrint();
+      };
+      iframe.contentWindow?.addEventListener('load', tryPrintOnce);
+      setTimeout(tryPrintOnce, 1000);
     };
 
-    // Fallback if onload doesn't fire (some browsers)
-    setTimeout(() => {
-      if (!printWindow.closed) {
-        printWindow.print();
-        printWindow.close();
-      }
-    }, 1000);
-
+    iframe.addEventListener('load', onIframeLoad, { once: true });
     onPrint?.();
   }, [containerRef, onPrint]);
 

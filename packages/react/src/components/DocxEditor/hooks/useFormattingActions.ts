@@ -1,6 +1,6 @@
-import { useCallback } from 'react';
-import { TextSelection } from 'prosemirror-state';
-import type { Document } from '@eigenpal/docx-editor-core/types/document';
+import { useCallback, useRef, useState } from 'react';
+import { TextSelection, type EditorState } from 'prosemirror-state';
+import type { Document, TextFormatting } from '@eigenpal/docx-editor-core/types/document';
 import {
   toggleBold,
   toggleItalic,
@@ -33,6 +33,7 @@ import {
   generateTOC,
   insertTable,
 } from '@eigenpal/docx-editor-core/prosemirror/commands';
+import { charsToTwips } from '@eigenpal/docx-editor-core';
 import { createStyleResolver } from '@eigenpal/docx-editor-core/prosemirror';
 import { getCachedNumberingMap } from '@eigenpal/docx-editor-core/docx';
 import type { EditorView } from 'prosemirror-view';
@@ -41,6 +42,56 @@ import { pointsToHalfPoints } from '../../ui/FontSizePicker';
 import { mapHexToHighlightName } from '../../toolbarUtils';
 import type { useHyperlinkDialog } from '../../dialogs/HyperlinkDialog';
 import type { PagedEditorRef } from '../PagedEditor';
+
+/**
+ * Format painter clipboard shape: stores copied text + paragraph formatting
+ * so it can be applied to a different selection.
+ */
+export interface FormatPainterClipboard {
+  /** Text-level formatting marks */
+  textFormatting: Partial<TextFormatting>;
+  /** Paragraph-level formatting attributes */
+  paragraphFormatting: Record<string, unknown>;
+}
+
+/** Paragraph attrs the format painter copies and applies. */
+const FORMAT_PAINTER_PARA_KEYS = [
+  'alignment',
+  'indentLeft',
+  'indentRight',
+  'indentFirstLine',
+  'hangingIndent',
+  'lineSpacing',
+  'lineSpacingRule',
+  'spaceBefore',
+  'spaceAfter',
+] as const;
+
+/** Default font size in half-points (12pt) when the selection has no fontSize mark. */
+const DEFAULT_FONT_SIZE_HALF_PTS = 24;
+
+/**
+ * Resolve the effective font size (half-points) at the current selection,
+ * preferring storedMarks (pending marks at a collapsed caret) and falling
+ * back to the marks actually present at the selection head.
+ */
+function getSelectionFontSize(state: EditorState): number {
+  const marks = state.storedMarks ?? state.selection.$from.marks();
+  const sizeMark = marks.find((m) => m.type.name === 'fontSize');
+  const size = sizeMark?.attrs?.size ?? sizeMark?.attrs?.sizeCs;
+  return typeof size === 'number' && size > 0 ? size : DEFAULT_FONT_SIZE_HALF_PTS;
+}
+
+/**
+ * Indent step for the indent/outdent buttons: two characters at the
+ * selection's font size, matching Word's Chinese-document convention
+ * (首行缩进 2 字符). Uses the East Asian character width, so for
+ * predominantly Latin text the step is wider than the rendered glyphs —
+ * intentional, since the OOXML indent is stored in twips either way.
+ */
+function getCharIndentStep(state: EditorState): number {
+  return charsToTwips(2, getSelectionFontSize(state), 'eastAsian');
+}
 
 /**
  * Toolbar action handlers: the big `handleFormat` switch that routes
@@ -67,6 +118,12 @@ export function useFormattingActions({
     styles: Parameters<typeof createStyleResolver>[0]
   ) => ReturnType<typeof createStyleResolver>;
 }) {
+  // Per-instance format painter clipboard. Held in a ref (not module scope)
+  // so multiple editors on one page don't share or clobber each other's
+  // copied formatting, and so it's released when the editor unmounts.
+  const formatPainterRef = useRef<FormatPainterClipboard | null>(null);
+  const [formatPainterActive, setFormatPainterActive] = useState(false);
+
   const handleFormat = useCallback(
     (action: FormattingAction) => {
       const view = getActiveEditorView();
@@ -94,7 +151,11 @@ export function useFormattingActions({
           );
           view.dispatch(tr);
         } catch (e) {
-          console.warn('Could not restore selection:', e);
+          // Stale saved selection (doc shrank since it was recorded) — the
+          // action still runs against the live selection.
+          if (process.env.NODE_ENV !== 'production') {
+            console.warn('Could not restore selection:', e);
+          }
         }
       }
 
@@ -108,19 +169,149 @@ export function useFormattingActions({
       if (action === 'numberedList') return void toggleNumberedList(view.state, view.dispatch);
       if (action === 'indent') {
         if (!increaseListLevel(view.state, view.dispatch)) {
-          increaseIndent()(view.state, view.dispatch);
+          increaseIndent(getCharIndentStep(view.state))(view.state, view.dispatch);
         }
         return;
       }
       if (action === 'outdent') {
         if (!decreaseListLevel(view.state, view.dispatch)) {
-          decreaseIndent()(view.state, view.dispatch);
+          decreaseIndent(getCharIndentStep(view.state))(view.state, view.dispatch);
         }
         return;
       }
       if (action === 'clearFormatting') return void clearFormatting(view.state, view.dispatch);
       if (action === 'setRtl') return void setRtl(view.state, view.dispatch);
       if (action === 'setLtr') return void setLtr(view.state, view.dispatch);
+      if (action === 'formatPainterCopy') {
+        const { state } = view;
+        const { $from, $to, empty } = state.selection;
+
+        // Collect text-level marks from the selection
+        const textFormatting: Partial<TextFormatting> = {};
+        const markCounts: Record<string, Record<string, number>> = {};
+        let textNodeCount = 0;
+
+        if (empty) {
+          const marks = state.storedMarks || $from.marks();
+          for (const m of marks) {
+            if (m.type.name === 'bold') textFormatting.bold = true;
+            if (m.type.name === 'italic') textFormatting.italic = true;
+            if (m.type.name === 'underline') textFormatting.underline = { style: 'single' };
+            if (m.type.name === 'strike') textFormatting.strike = true;
+            if (m.type.name === 'fontSize') textFormatting.fontSize = m.attrs.size ?? m.attrs.sizeCs;
+            if (m.type.name === 'fontFamily') textFormatting.fontFamily = { ascii: m.attrs.ascii, hAnsi: m.attrs.hAnsi };
+            if (m.type.name === 'textColor') textFormatting.color = m.attrs.color;
+            if (m.type.name === 'highlight') textFormatting.highlight = m.attrs.highlight;
+            if (m.type.name === 'superscript') textFormatting.vertAlign = 'superscript';
+            if (m.type.name === 'subscript') textFormatting.vertAlign = 'subscript';
+          }
+        } else {
+          state.doc.nodesBetween($from.pos, $to.pos, (node) => {
+            if (node.isText && node.marks.length > 0) {
+              textNodeCount++;
+              for (const m of node.marks) {
+                const name = m.type.name;
+                if (!markCounts[name]) markCounts[name] = {};
+                const key = JSON.stringify(m.attrs);
+                markCounts[name][key] = (markCounts[name][key] || 0) + node.text!.length;
+              }
+            }
+            return true;
+          });
+
+          if (textNodeCount > 0) {
+            for (const [name, counts] of Object.entries(markCounts)) {
+              let maxKey = '';
+              let maxCount = 0;
+              for (const [k, c] of Object.entries(counts)) {
+                if (c > maxCount) { maxCount = c; maxKey = k; }
+              }
+              if (maxKey) {
+                const attrs = JSON.parse(maxKey);
+                switch (name) {
+                  case 'bold': textFormatting.bold = true; break;
+                  case 'italic': textFormatting.italic = true; break;
+                  case 'underline': textFormatting.underline = { style: attrs.style || 'single' }; break;
+                  case 'strike': textFormatting.strike = true; break;
+                  case 'fontSize': textFormatting.fontSize = attrs.size ?? attrs.sizeCs; break;
+                  case 'fontFamily': textFormatting.fontFamily = { ascii: attrs.ascii, hAnsi: attrs.hAnsi }; break;
+                  case 'textColor': textFormatting.color = attrs.color; break;
+                  case 'highlight': textFormatting.highlight = attrs.highlight; break;
+                  case 'superscript': textFormatting.vertAlign = 'superscript'; break;
+                  case 'subscript': textFormatting.vertAlign = 'subscript'; break;
+                }
+              }
+            }
+          }
+        }
+
+        // Collect paragraph-level attrs from the first paragraph in selection
+        const paragraphFormatting: Record<string, unknown> = {};
+        const para = $from.parent;
+        if (para.type.name === 'paragraph') {
+          for (const key of FORMAT_PAINTER_PARA_KEYS) {
+            if (para.attrs[key] !== null && para.attrs[key] !== undefined) {
+              paragraphFormatting[key] = para.attrs[key];
+            }
+          }
+        }
+
+        formatPainterRef.current = { textFormatting, paragraphFormatting };
+        setFormatPainterActive(true);
+        return;
+      }
+      if (action === 'formatPainterPaste') {
+        const clipboard = formatPainterRef.current;
+        if (!clipboard) return;
+        const { state, dispatch } = view;
+        if (!dispatch) return;
+        const { $from, $to, empty } = state.selection;
+        const { textFormatting, paragraphFormatting } = clipboard;
+        let tr = state.tr;
+        const applied = new Set<number>();
+        let didApply = false;
+
+        const hasTextFmt = Object.keys(textFormatting).length > 0;
+
+        const nextParaAttrs = (attrs: Record<string, unknown>) => {
+          const paraAttrs = { ...attrs };
+          for (const key of FORMAT_PAINTER_PARA_KEYS) {
+            if (paragraphFormatting[key] !== undefined) paraAttrs[key] = paragraphFormatting[key];
+          }
+          if (hasTextFmt) {
+            paraAttrs.defaultTextFormatting = {
+              ...((paraAttrs.defaultTextFormatting as object | undefined) ?? {}),
+              ...textFormatting,
+            };
+          }
+          return paraAttrs;
+        };
+
+        if (empty) {
+          const para = $from.parent;
+          if (para.type.name === 'paragraph') {
+            tr = tr.setNodeMarkup($from.before(), undefined, nextParaAttrs(para.attrs));
+            didApply = true;
+          }
+        } else {
+          state.doc.nodesBetween($from.pos, $to.pos, (node, pos) => {
+            if (node.type.name === 'paragraph' && !applied.has(pos)) {
+              applied.add(pos);
+              tr = tr.setNodeMarkup(pos, undefined, nextParaAttrs(node.attrs));
+              didApply = true;
+            }
+          });
+        }
+
+        // Keep the copied formatting when nothing was applied (e.g. the
+        // selection held no paragraph) so the user can retry on a valid target.
+        if (!didApply) return;
+
+        dispatch(tr.scrollIntoView());
+        formatPainterRef.current = null;
+        setFormatPainterActive(false);
+        return;
+      }
       if (action === 'insertLink') {
         const selectedText = getSelectedText(view.state);
         const existingLink = getHyperlinkAttrs(view.state);
@@ -247,5 +438,6 @@ export function useFormattingActions({
     handleInsertSectionBreakNextPage,
     handleInsertSectionBreakContinuous,
     handleInsertTOC,
+    formatPainterActive,
   };
 }

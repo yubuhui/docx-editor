@@ -90,6 +90,8 @@ export {
   pixelsToEmu,
   emuToTwips,
   twipsToEmu,
+  charsToTwips,
+  twipsToChars,
 } from './utils/units';
 
 export {

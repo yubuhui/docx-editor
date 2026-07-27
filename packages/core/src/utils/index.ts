@@ -11,6 +11,7 @@
 // Unit conversion
 export {
   TWIPS_PER_INCH,
+  TWIPS_PER_CM,
   PIXELS_PER_INCH,
   twipsToPixels,
   pixelsToTwips,

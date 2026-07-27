@@ -4,6 +4,9 @@
 
 ```ts
 
+// @public (undocumented)
+export const EXTENDED_FONTS: FontOption[];
+
 // @public
 export interface FontOption {
     // (undocumented)
