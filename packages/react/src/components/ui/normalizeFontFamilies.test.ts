@@ -1,5 +1,6 @@
 import { describe, expect, test, mock, beforeEach, afterEach } from 'bun:test';
 import { normalizeFontFamilies } from './normalizeFontFamilies';
+import { EXTENDED_FONTS } from '@eigenpal/docx-editor-core/utils/fontOptions';
 import type { FontOption } from './FontPicker';
 
 describe('normalizeFontFamilies', () => {
@@ -78,6 +79,55 @@ describe('normalizeFontFamilies', () => {
     test('does not warn when names are unique', () => {
       normalizeFontFamilies(['Arial', 'Roboto', 'Cambria']);
       expect(warnSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('duplicate-name de-duplication', () => {
+    let originalWarn: typeof console.warn;
+
+    beforeEach(() => {
+      originalWarn = console.warn;
+      console.warn = mock(() => {});
+    });
+
+    afterEach(() => {
+      console.warn = originalWarn;
+    });
+
+    test('drops repeated names so the picker has no duplicate entries', () => {
+      const result = normalizeFontFamilies(['Arial', 'Roboto', 'Arial']);
+      expect(result).toEqual([
+        { name: 'Arial', fontFamily: 'Arial', category: 'other' },
+        { name: 'Roboto', fontFamily: 'Roboto', category: 'other' },
+      ]);
+    });
+
+    test('keeps the first occurrence when a name repeats with different details', () => {
+      // First-wins: the earlier entry is the one the caller listed first, so
+      // its fallback chain / category is the one that survives.
+      const result = normalizeFontFamilies([
+        { name: 'Arial', fontFamily: 'Arial, Helvetica, sans-serif', category: 'sans-serif' },
+        { name: 'Arial', fontFamily: 'SomethingElse', category: 'serif' },
+      ]);
+      expect(result).toEqual([
+        { name: 'Arial', fontFamily: 'Arial, Helvetica, sans-serif', category: 'sans-serif' },
+      ]);
+    });
+
+    test('collapses a triple duplicate to a single entry', () => {
+      expect(normalizeFontFamilies(['Arial', 'Arial', 'Arial'])).toHaveLength(1);
+    });
+
+    test('leaves a already-unique list untouched', () => {
+      const fonts = ['Arial', 'Roboto', 'Cambria'];
+      expect(normalizeFontFamilies(fonts)).toHaveLength(3);
+    });
+
+    test('EXTENDED_FONTS has no duplicate names', () => {
+      // The fork's bundled Chinese+Latin list is passed straight to the
+      // picker; a duplicate there would silently lose an entry.
+      const names = EXTENDED_FONTS.map((f) => f.name);
+      expect(new Set(names).size).toBe(names.length);
     });
   });
 });
