@@ -215,6 +215,7 @@ export interface DocxEditorRef {
     scrollToPosition: (pmPos: number) => void;
     setContentControlContent: (filter: ContentControlFilter, text: string, options?: {
         force?: boolean;
+        all?: boolean;
     }) => boolean;
     setContentControlValue: (filter: ContentControlFilter, value: ContentControlValue, options?: {
         force?: boolean;

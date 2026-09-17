@@ -42,9 +42,26 @@ describe('page-number field parsing', () => {
   });
 
   test('isPageNumberField flags PAGE; isTotalPagesField flags NUMPAGES', () => {
-    const page: Field = { type: 'complexField', fieldType: 'PAGE', instruction: ' PAGE ' };
-    const num: Field = { type: 'simpleField', fieldType: 'NUMPAGES', instruction: 'NUMPAGES' };
-    const text: Field = { type: 'complexField', fieldType: 'DATE', instruction: 'DATE' };
+    const page: Field = {
+      type: 'complexField',
+      fieldType: 'PAGE',
+      instruction: ' PAGE ',
+      fieldCode: [],
+      fieldResult: [],
+    };
+    const num: Field = {
+      type: 'simpleField',
+      fieldType: 'NUMPAGES',
+      instruction: 'NUMPAGES',
+      content: [],
+    };
+    const text: Field = {
+      type: 'complexField',
+      fieldType: 'DATE',
+      instruction: 'DATE',
+      fieldCode: [],
+      fieldResult: [],
+    };
     expect(isPageNumberField(page)).toBe(true);
     expect(isTotalPagesField(num)).toBe(true);
     expect(isPageNumberField(text)).toBe(false);

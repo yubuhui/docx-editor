@@ -491,39 +491,27 @@ export interface DocxEditorRef {
   /** Get all comments. */
   getComments: () => Comment[];
   /**
-   * List block-level content controls (SDTs) in the live document, optionally
-   * filtered by `tag`/`alias`/`id`/`type`. Each result includes the control's
-   * text and PM position. Anchors for templates and document automation.
+   * List block-level content controls (SDTs), optionally filtered; each result
+   * includes text and PM position.
    */
   getContentControls: (filter?: ContentControlFilter) => PMContentControl[];
-  /** Scroll the first content control matching `filter` into view. Returns false if none. */
+  /** Scroll the first control matching `filter` into view. Returns false if none. */
   scrollToContentControl: (filter: ContentControlFilter) => boolean;
-  /**
-   * Replace the content of the first control matching `filter` with `text`
-   * (newlines become paragraphs). Returns false if no match. Throws if the
-   * control is content-locked unless `{ force: true }`.
-   */
+  /** Replace the first control matching `filter` with `text` (newlines become
+   *  paragraphs); `{ all: true }` fills every match. Returns false if no match. */
   setContentControlContent: (
     filter: ContentControlFilter,
     text: string,
-    options?: { force?: boolean }
+    options?: { force?: boolean; all?: boolean }
   ) => boolean;
-  /**
-   * Remove the first control matching `filter`. With `{ keepContent: true }`
-   * the inner blocks are unwrapped in place. Returns false if no match. Throws
-   * if the control is deletion-locked unless `{ force: true }`.
-   */
+  /** Remove the first control matching `filter`; `{ keepContent: true }`
+   *  unwraps inner blocks. Returns false if no match. */
   removeContentControl: (
     filter: ContentControlFilter,
     options?: { force?: boolean; keepContent?: boolean }
   ) => boolean;
-  /**
-   * Set a typed value on the first control matching `filter`: a dropdown
-   * selection (`{ kind: 'dropdown', value }`), checkbox (`{ kind: 'checkbox',
-   * checked }`), or date (`{ kind: 'date', date }`). Updates the visible
-   * content and structured state. Returns false if no match; throws if
-   * content-locked (unless `force`) or the value doesn't fit the control type.
-   */
+  /** Set a typed value on the first control matching `filter`: dropdown,
+   *  checkbox, or date. Returns false if no match. */
   setContentControlValue: (
     filter: ContentControlFilter,
     value: ContentControlValue,

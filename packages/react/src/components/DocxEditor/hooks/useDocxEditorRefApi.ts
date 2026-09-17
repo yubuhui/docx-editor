@@ -212,7 +212,7 @@ export function useDocxEditorRefApi({
       setContentControlContent: (
         filter: ContentControlFilter,
         text: string,
-        options?: { force?: boolean }
+        options?: { force?: boolean; all?: boolean }
       ): boolean => {
         const view = pagedEditorRef.current?.getView();
         if (!view) return false;
