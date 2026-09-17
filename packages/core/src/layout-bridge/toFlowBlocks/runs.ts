@@ -30,6 +30,17 @@ import { twipsToPixels, constrainImageToPage } from './shared';
 import type { ToFlowBlocksOptions } from './shared';
 
 /**
+ * Word treats a bare CR/LF inside `<w:t>` as ordinary whitespace (it collapses
+ * to a space); a real line break must be a `<w:br/>`. Our painter renders each
+ * run with `white-space: pre`, so a raw newline would otherwise paint as a hard
+ * line break and diverge from Word. Normalize 1:1 to a space so the run length
+ * (and therefore the pmStart/pmEnd offset math) stays unchanged.
+ */
+function normalizeRunText(text: string): string {
+  return /[\r\n]/.test(text) ? text.replace(/[\r\n]/g, ' ') : text;
+}
+
+/**
  * Extract run formatting from ProseMirror marks.
  */
 function extractRunFormatting(marks: readonly Mark[], theme?: Theme | null): RunFormatting {
@@ -396,7 +407,7 @@ export function paragraphToRuns(
       if (inTocParagraph) stripTocHyperlinkStyle(formatting);
       const run: TextRun = {
         kind: 'text',
-        text: child.text,
+        text: normalizeRunText(child.text),
         ...paraDefaults,
         ...formatting,
         pmStart: childPos,
