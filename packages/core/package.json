@@ -193,6 +193,11 @@
       "import": "./dist/utils/fontOptions.mjs",
       "require": "./dist/utils/fontOptions.js"
     },
+    "./utils/legalDocValidation": {
+      "types": "./dist/utils/legalDocValidation.d.ts",
+      "import": "./dist/utils/legalDocValidation.mjs",
+      "require": "./dist/utils/legalDocValidation.js"
+    },
     "./utils/headingCollector": {
       "types": "./dist/utils/headingCollector.d.ts",
       "import": "./dist/utils/headingCollector.mjs",
