@@ -97,7 +97,23 @@ function extractRunFormatting(marks: readonly Mark[], theme?: Theme | null): Run
       case 'fontFamily': {
         const attrs = mark.attrs as FontFamilyAttrs;
         const isRtl = marks.some((m) => m.type.name === 'rtl');
-        formatting.fontFamily = isRtl && attrs.cs ? attrs.cs : attrs.ascii || attrs.hAnsi;
+        const base = isRtl && attrs.cs ? attrs.cs : attrs.ascii || attrs.hAnsi;
+        // Combine the Latin face with the CJK face (w:eastAsia) into one CSS
+        // font stack: Latin glyphs resolve in `base`, CJK glyphs fall through
+        // to `eastAsia`. Without eastAsia the 公文 body renders in a Latin face
+        // instead of 仿宋_GB2312/方正小标宋简体. `resolveFontFamily` splits on
+        // ',' and resolves each member into its own fallback stack.
+        //
+        // When the run sets ONLY eastAsia (no ascii/hAnsi), the Latin face must
+        // come from the style chain (paraDefaults) rather than being dropped —
+        // store eastAsia separately and join in the run builder so the inherited
+        // ascii still leads the stack.
+        if (base) {
+          formatting.fontFamily =
+            attrs.eastAsia && attrs.eastAsia !== base ? `${base},${attrs.eastAsia}` : base;
+        } else if (attrs.eastAsia) {
+          formatting.eastAsiaFontFamily = attrs.eastAsia;
+        }
         break;
       }
 
@@ -275,20 +291,46 @@ function paragraphRunDefaults(pmAttrs: PMParagraphAttrs): {
   const dtf = pmAttrs.defaultTextFormatting as
     | {
         fontSize?: number;
-        fontFamily?: { ascii?: string; hAnsi?: string };
+        fontFamily?: { ascii?: string; hAnsi?: string; eastAsia?: string };
       }
     | undefined;
   if (!dtf) return {};
   const result: { fontFamily?: string; fontSize?: number } = {};
   if (dtf.fontFamily) {
     const family = dtf.fontFamily.ascii || dtf.fontFamily.hAnsi;
-    if (family) result.fontFamily = family;
+    if (family) {
+      result.fontFamily =
+        dtf.fontFamily.eastAsia && dtf.fontFamily.eastAsia !== family
+          ? `${family},${dtf.fontFamily.eastAsia}`
+          : family;
+    } else if (dtf.fontFamily.eastAsia) {
+      result.fontFamily = dtf.fontFamily.eastAsia;
+    }
   }
   if (dtf.fontSize != null) {
     // TextFormatting.fontSize is in half-points; RunFormatting.fontSize is points.
     result.fontSize = dtf.fontSize / 2;
   }
   return result;
+}
+
+/**
+ * Join a run's own CJK-only face (eastAsiaFontFamily, set when the run wrote
+ * w:eastAsia without ascii/hAnsi) onto the effective Latin fontFamily so the
+ * CSS stack is `inherited ascii, run eastAsia` rather than dropping either.
+ */
+function joinEastAsiaFont(
+  run: { fontFamily?: string; eastAsiaFontFamily?: string },
+  paraDefaults: { fontFamily?: string }
+): void {
+  if (!run.eastAsiaFontFamily) return;
+  const base = run.fontFamily ?? paraDefaults.fontFamily;
+  if (base && base !== run.eastAsiaFontFamily) {
+    run.fontFamily = `${base},${run.eastAsiaFontFamily}`;
+  } else if (!base) {
+    run.fontFamily = run.eastAsiaFontFamily;
+  }
+  delete run.eastAsiaFontFamily;
 }
 
 /**
@@ -361,6 +403,7 @@ export function paragraphToRuns(
         pmEnd: childPos + child.nodeSize,
         inlineSdtWidget,
       };
+      joinEastAsiaFont(run, paraDefaults);
       runs.push(run);
     } else if (child.type.name === 'hardBreak') {
       runs.push({
@@ -377,6 +420,7 @@ export function paragraphToRuns(
         pmStart: childPos,
         pmEnd: childPos + child.nodeSize,
       };
+      joinEastAsiaFont(run, paraDefaults);
       runs.push(run);
     } else if (child.type.name === 'image') {
       const attrs = child.attrs;

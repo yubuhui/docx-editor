@@ -128,9 +128,10 @@ describe('end-to-end cascade — #392 rFonts inheritance', () => {
     const blocks = toFlowBlocks(pmDoc, {});
     const run = firstRun(blocks);
 
-    // The run inherits ascii from Normal's rPr — does NOT fall back to
-    // the painter's hardcoded Calibri stack.
-    expect(run.fontFamily).toBe('Arial Narrow');
+    // The run inherits ascii from Normal's rPr AND keeps its own eastAsia —
+    // the CJK face is joined as the second member of the CSS font stack instead
+    // of being dropped (which would render CJK glyphs in the Latin face).
+    expect(run.fontFamily).toBe('Arial Narrow,Calibri');
   });
 });
 

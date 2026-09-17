@@ -470,6 +470,7 @@ export type RunFormatting = {
     color?: string;
     highlight?: string;
     fontFamily?: string;
+    eastAsiaFontFamily?: string;
     fontSize?: number;
     letterSpacing?: number;
     superscript?: boolean;

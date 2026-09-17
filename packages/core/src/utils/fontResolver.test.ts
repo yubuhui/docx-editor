@@ -36,3 +36,27 @@ describe('fontResolver — native CJK theme typefaces map to matched Noto webfon
     });
   }
 });
+
+describe('resolveFontFamily with combined Latin+CJK stack', () => {
+  test('splits a comma stack and concatenates each member fallback in order', () => {
+    const resolved = resolveFontFamily('Times New Roman,仿宋_GB2312');
+    expect(resolved.cssFallback).toContain('Times New Roman');
+    expect(resolved.cssFallback).toContain('Tinos');
+    expect(resolved.cssFallback).toContain('仿宋_GB2312');
+    // Latin face first, CJK face second (CJK glyphs fall through to eastAsia).
+    expect(resolved.cssFallback.indexOf('Times New Roman')).toBeLessThan(
+      resolved.cssFallback.indexOf('仿宋_GB2312')
+    );
+  });
+
+  test('empty stack members are dropped', () => {
+    const resolved = resolveFontFamily('Arial,,仿宋');
+    expect(resolved.cssFallback).toContain('Arial');
+    expect(resolved.cssFallback).toContain('仿宋');
+  });
+
+  test('single member with no comma behaves as before', () => {
+    const resolved = resolveFontFamily('Calibri');
+    expect(resolved.cssFallback).toContain('Carlito');
+  });
+});

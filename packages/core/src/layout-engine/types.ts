@@ -32,6 +32,8 @@ export type RunFormatting = {
   color?: string;
   highlight?: string;
   fontFamily?: string;
+  /** CJK face (w:eastAsia) kept separate so a run with only eastAsia joins the style-chain Latin face. */
+  eastAsiaFontFamily?: string;
   fontSize?: number;
   letterSpacing?: number;
   superscript?: boolean;

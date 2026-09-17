@@ -442,6 +442,26 @@ const CJK_FONT_ALIASES: Record<string, string> = {
 };
 
 export function resolveFontFamily(docxFontName: string): ResolvedFont {
+  // A comma-separated stack (e.g. "Times New Roman,仿宋_GB2312") built by the
+  // layout bridge combines the Latin face with the w:eastAsia CJK face. Resolve
+  // each member into its own fallback stack and concatenate in order so Latin
+  // glyphs land in the first face and CJK glyphs fall through to the second.
+  if (docxFontName.includes(',')) {
+    const members = docxFontName
+      .split(',')
+      .map((m) => m.trim())
+      .filter(Boolean);
+    const stacks = members.map((m) => resolveFontFamily(m).cssFallback);
+    if (stacks.length === 0) return resolveFontFamily('');
+    return {
+      googleFont: null,
+      cssFallback: stacks.join(', '),
+      originalFont: docxFontName,
+      hasGoogleEquivalent: false,
+      singleLineRatio: DEFAULT_SINGLE_LINE_RATIO,
+    };
+  }
+
   const normalizedName = docxFontName.trim().toLowerCase();
 
   // Direct mapping, or a romanized CJK spelling aliased to its native entry.
