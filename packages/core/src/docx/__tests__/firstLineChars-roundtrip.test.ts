@@ -111,3 +111,68 @@ describe('firstLineChars round-trip', () => {
     expect(p2.formatting?.firstLineChars).toBe(200);
   });
 });
+
+/**
+ * The indent is N characters at the paragraph's OWN font size, so the twips
+ * must scale with the run size — a 三号 heading and a 五号 footnote each indent
+ * by their own character width, not a fixed 12pt width.
+ */
+describe('firstLineChars is sized by the paragraph font size', () => {
+  function paraWithSize(chars: number, halfPts: number, markSize?: number): string {
+    const mark = markSize ? `<w:rPr><w:sz w:val="${markSize}"/></w:rPr>` : '';
+    return `
+      <w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+        <w:pPr><w:ind w:firstLineChars="${chars}"/>${mark}</w:pPr>
+        <w:r><w:rPr><w:sz w:val="${halfPts}"/></w:rPr><w:t>文本</w:t></w:r>
+      </w:p>
+    `;
+  }
+
+  test('2 chars at 12pt (小四) = 480 twips', () => {
+    expect(parseParagraphXml(paraWithSize(200, 24)).formatting?.indentFirstLine).toBe(480);
+  });
+
+  test('2 chars at 16pt (三号) = 640 twips', () => {
+    expect(parseParagraphXml(paraWithSize(200, 32)).formatting?.indentFirstLine).toBe(640);
+  });
+
+  test('2 chars at 10.5pt (五号) = 420 twips', () => {
+    expect(parseParagraphXml(paraWithSize(200, 21)).formatting?.indentFirstLine).toBe(420);
+  });
+
+  test('4 chars at 12pt scales linearly to 960 twips', () => {
+    expect(parseParagraphXml(paraWithSize(400, 24)).formatting?.indentFirstLine).toBe(960);
+  });
+
+  test('paragraph-mark rPr size wins when runs carry no size', () => {
+    const xml = `
+      <w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+        <w:pPr><w:ind w:firstLineChars="200"/><w:rPr><w:sz w:val="32"/></w:rPr></w:pPr>
+        <w:r><w:t>文本</w:t></w:r>
+      </w:p>
+    `;
+    expect(parseParagraphXml(xml).formatting?.indentFirstLine).toBe(640);
+  });
+
+  test('hangingChars is sized by the run font too', () => {
+    const xml = `
+      <w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+        <w:pPr><w:ind w:hangingChars="200"/></w:pPr>
+        <w:r><w:rPr><w:sz w:val="32"/></w:rPr><w:t>列表项</w:t></w:r>
+      </w:p>
+    `;
+    const p = parseParagraphXml(xml);
+    expect(p.formatting?.indentFirstLine).toBe(-640);
+    expect(p.formatting?.hangingIndent).toBe(true);
+  });
+
+  test('falls back to 12pt when no font size is declared anywhere', () => {
+    const xml = `
+      <w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+        <w:pPr><w:ind w:firstLineChars="200"/></w:pPr>
+        <w:r><w:t>无字号声明</w:t></w:r>
+      </w:p>
+    `;
+    expect(parseParagraphXml(xml).formatting?.indentFirstLine).toBe(480);
+  });
+});

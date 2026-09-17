@@ -26,6 +26,7 @@ import type { StyleMap } from './styleParser';
 import { computeListRendering, type NumberingMap } from './numberingParser';
 import { findChild, getAttribute, type XmlElement } from './xmlParser';
 import { normalizeLongHexId } from '../utils/hexId';
+import { charsToTwips } from '../utils/units';
 import { parseSectionProperties } from './sectionParser';
 
 import { parseParagraphProperties } from './paragraphParser/properties';
@@ -62,6 +63,33 @@ function parseTrackedChangeAttrs(el: XmlElement): TrackedChangeInfo | null {
   const info: TrackedChangeInfo = { id, author };
   if (date) info.date = date;
   return info;
+}
+
+/**
+ * Effective font size (half-points) for character-unit indents. Word sizes a
+ * `w:firstLineChars`/`w:hangingChars` indent by N characters at the paragraph's
+ * own font: prefer the paragraph-mark rPr, then the first run's rPr (recursing
+ * into hyperlinks). `undefined` means "unknown" — callers fall back to 12pt.
+ */
+function effectiveFontSizeHalfPoints(
+  formatting: Paragraph['formatting'],
+  content: Paragraph['content']
+): number | undefined {
+  const markSize = formatting?.runProperties?.fontSize;
+  if (markSize) return markSize;
+  for (const node of content) {
+    if (node.type === 'run') {
+      const sz = node.formatting?.fontSize;
+      if (sz) return sz;
+    } else if (node.type === 'hyperlink') {
+      for (const child of node.children) {
+        if (child.type === 'run' && child.formatting?.fontSize) {
+          return child.formatting.fontSize;
+        }
+      }
+    }
+  }
+  return undefined;
 }
 
 /**
@@ -153,6 +181,23 @@ export function parseParagraph(
   // tracked changes, and fidelity tooling, so parser-level consolidation would
   // erase information before later round-trip stages have a chance to preserve it.
   paragraph.content = rawContent;
+
+  // `w:firstLineChars`/`w:hangingChars` are character-unit indents sized by the
+  // paragraph's own font (Word: N characters at the run size). The pPr parse has
+  // no font context and converted at a 12pt assumption; now that the runs are
+  // known, re-derive the twips from the effective size so 三号/五号 headings and
+  // body text each indent by their own character width.
+  {
+    const fmt = paragraph.formatting;
+    if (fmt && (fmt.firstLineChars !== undefined || fmt.hangingChars !== undefined)) {
+      const halfPts = effectiveFontSizeHalfPoints(fmt, paragraph.content) ?? 24;
+      if (fmt.hangingChars !== undefined && fmt.hangingIndent) {
+        fmt.indentFirstLine = -charsToTwips(fmt.hangingChars / 100, halfPts, 'eastAsian');
+      } else if (fmt.firstLineChars !== undefined) {
+        fmt.indentFirstLine = charsToTwips(fmt.firstLineChars / 100, halfPts, 'eastAsian');
+      }
+    }
+  }
 
   // Compute list rendering if this is a list item.
   // numPr can come from inline pPr or from the referenced paragraph style.
