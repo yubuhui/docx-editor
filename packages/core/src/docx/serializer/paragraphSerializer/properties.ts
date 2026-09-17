@@ -142,9 +142,20 @@ export function serializeIndentation(formatting: ParagraphFormatting): string {
 
   if (formatting.indentFirstLine !== undefined) {
     if (formatting.hangingIndent) {
-      // Hanging indent is stored as positive value but uses w:hanging attribute
+      // Hanging indent is stored as positive value but uses w:hanging attribute.
+      // When the source carried w:hangingChars, write it back (Word prefers the
+      // char semantics) alongside the twips fallback for other consumers.
+      if (formatting.hangingChars !== undefined) {
+        attrs.push(`w:hangingChars="${intAttr(formatting.hangingChars)}"`);
+      }
       attrs.push(`w:hanging="${intAttr(Math.abs(formatting.indentFirstLine))}"`);
     } else if (formatting.indentFirstLine !== 0) {
+      // Character-based first-line indent survives as w:firstLineChars when the
+      // source used it (Chinese "首行缩进N字符" convention); twips written alongside
+      // so Word/WPS and other renderers that ignore chars still apply the indent.
+      if (formatting.firstLineChars !== undefined) {
+        attrs.push(`w:firstLineChars="${intAttr(formatting.firstLineChars)}"`);
+      }
       attrs.push(`w:firstLine="${intAttr(formatting.indentFirstLine)}"`);
     }
   }

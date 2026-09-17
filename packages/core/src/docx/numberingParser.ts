@@ -32,6 +32,7 @@ import {
   parseNumericAttribute,
   type XmlElement,
 } from './xmlParser';
+import { charsToTwips } from '../utils/units';
 
 /**
  * Map of rId to numbering definitions
@@ -451,6 +452,8 @@ function parseLevelParagraphProps(pPr: XmlElement): ParagraphFormatting {
     const right = parseNumericAttribute(indEl, 'w', 'right');
     const start = parseNumericAttribute(indEl, 'w', 'start');
     const end = parseNumericAttribute(indEl, 'w', 'end');
+    const firstLineChars = parseNumericAttribute(indEl, 'w', 'firstLineChars');
+    const hangingChars = parseNumericAttribute(indEl, 'w', 'hangingChars');
     const firstLine = parseNumericAttribute(indEl, 'w', 'firstLine');
     const hanging = parseNumericAttribute(indEl, 'w', 'hanging');
 
@@ -459,9 +462,16 @@ function parseLevelParagraphProps(pPr: XmlElement): ParagraphFormatting {
     if (resolvedLeft !== undefined) formatting.indentLeft = resolvedLeft;
     if (resolvedRight !== undefined) formatting.indentRight = resolvedRight;
 
-    if (hanging !== undefined) {
+    if (hangingChars !== undefined && hangingChars !== 0) {
+      formatting.indentFirstLine = -charsToTwips(hangingChars / 100, 24, 'eastAsian');
+      formatting.hangingIndent = true;
+      formatting.hangingChars = hangingChars;
+    } else if (hanging !== undefined) {
       formatting.indentFirstLine = -hanging;
       formatting.hangingIndent = true;
+    } else if (firstLineChars !== undefined && firstLineChars !== 0) {
+      formatting.indentFirstLine = charsToTwips(firstLineChars / 100, 24, 'eastAsian');
+      formatting.firstLineChars = firstLineChars;
     } else if (firstLine !== undefined) {
       formatting.indentFirstLine = firstLine;
     }

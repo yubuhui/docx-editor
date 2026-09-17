@@ -984,6 +984,7 @@ export interface ParagraphFormatting {
         bar?: BorderSpec;
     };
     contextualSpacing?: boolean;
+    firstLineChars?: number;
     frame?: {
         width?: number;
         height?: number;
@@ -995,6 +996,7 @@ export interface ParagraphFormatting {
         yAlign?: 'top' | 'center' | 'bottom' | 'inside' | 'outside' | 'inline';
         wrap?: 'around' | 'auto' | 'none' | 'notBeside' | 'through' | 'tight';
     };
+    hangingChars?: number;
     hangingIndent?: boolean;
     indentFirstLine?: number;
     indentLeft?: number;

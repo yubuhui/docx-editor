@@ -281,6 +281,11 @@ export interface ParagraphFormatting {
   indentFirstLine?: number;
   /** Whether first line is hanging indent */
   hangingIndent?: boolean;
+  /** Character-based first-line indent (w:ind/@w:firstLineChars, chars*100) when the source doc stored it;
+   *  present ⇒ serializer writes w:firstLineChars back so the char semantics survive the round-trip. */
+  firstLineChars?: number;
+  /** Character-based hanging indent (w:ind/@w:hangingChars, chars*100) */
+  hangingChars?: number;
 
   // Borders
   /** Paragraph borders (w:pBdr) */

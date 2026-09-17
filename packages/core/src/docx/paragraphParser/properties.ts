@@ -29,6 +29,7 @@ import {
 } from '../xmlParser';
 import { parseRunProperties } from '../runParser';
 import { parseParagraphBorders } from '../borderParser';
+import { charsToTwips } from '../../utils/units';
 
 /**
  * Parse shading properties (w:shd)
@@ -242,14 +243,42 @@ export function parseParagraphProperties(
     const right = parseNumericAttribute(ind, 'w', 'right');
     if (right !== undefined) formatting.indentRight = right;
 
-    const firstLine = parseNumericAttribute(ind, 'w', 'firstLine');
-    if (firstLine !== undefined) formatting.indentFirstLine = firstLine;
+    // w:firstLineChars / w:hangingChars are character-based indents (chars*100).
+    // Word/WPS store the Chinese "首行缩进N字符" convention as firstLineChars and
+    // PREFER it over w:firstLine when both are present. Convert to twips at the
+    // default body size (12pt half-points=24) to keep the render path unchanged;
+    // the serializer writes firstLineChars back so the char semantics survive.
+    // See utils/units.ts charsToTwips(chars, fontSizeHalfPts, 'eastAsian').
+    const TWELVE_PT_HALF_PTS = 24;
+    const firstLineChars = parseNumericAttribute(ind, 'w', 'firstLineChars');
+    if (firstLineChars !== undefined && firstLineChars !== 0) {
+      formatting.indentFirstLine = charsToTwips(
+        firstLineChars / 100,
+        TWELVE_PT_HALF_PTS,
+        'eastAsian'
+      );
+      formatting.firstLineChars = firstLineChars;
+    } else {
+      const firstLine = parseNumericAttribute(ind, 'w', 'firstLine');
+      if (firstLine !== undefined) formatting.indentFirstLine = firstLine;
+    }
 
-    const hanging = parseNumericAttribute(ind, 'w', 'hanging');
-    if (hanging !== undefined) {
-      // Hanging indent is stored as negative first line indent
-      formatting.indentFirstLine = -hanging;
+    const hangingChars = parseNumericAttribute(ind, 'w', 'hangingChars');
+    if (hangingChars !== undefined && hangingChars !== 0) {
+      formatting.indentFirstLine = -charsToTwips(
+        hangingChars / 100,
+        TWELVE_PT_HALF_PTS,
+        'eastAsian'
+      );
       formatting.hangingIndent = true;
+      formatting.hangingChars = hangingChars;
+    } else {
+      const hanging = parseNumericAttribute(ind, 'w', 'hanging');
+      if (hanging !== undefined) {
+        // Hanging indent is stored as negative first line indent
+        formatting.indentFirstLine = -hanging;
+        formatting.hangingIndent = true;
+      }
     }
 
     // Also check for w:start and w:end (alternative attributes)

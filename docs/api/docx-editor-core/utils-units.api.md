@@ -8,7 +8,7 @@
 export const AUTO_PARAGRAPH_SPACING_PX = 14;
 
 // @public
-export function charsToTwips(chars: number, fontSizeHalfPts: number): number;
+export function charsToTwips(chars: number, fontSizeHalfPts: number, script?: 'eastAsian' | 'latin' | 'auto'): number;
 
 // @public
 export function clamp(value: number, min: number, max: number): number;
@@ -56,7 +56,7 @@ export const TWIPS_PER_CM: number;
 export const TWIPS_PER_INCH = 1440;
 
 // @public
-export function twipsToChars(twips: number, fontSizeHalfPts: number): number;
+export function twipsToChars(twips: number, fontSizeHalfPts: number, script?: 'eastAsian' | 'latin' | 'auto'): number;
 
 // @public
 export function twipsToEmu(twips: number): number;

@@ -23,6 +23,7 @@ import {
 } from '../xmlParser';
 import { parseShadingProperties, parseRunProperties } from './runProperties';
 import { parseParagraphBorders } from '../borderParser';
+import { charsToTwips } from '../../utils/units';
 
 /**
  * Parse tab stops (w:tabs)
@@ -110,13 +111,38 @@ export function parseParagraphProperties(
     const right = parseNumericAttribute(ind, 'w', 'right');
     if (right !== undefined) formatting.indentRight = right;
 
-    const firstLine = parseNumericAttribute(ind, 'w', 'firstLine');
-    if (firstLine !== undefined) formatting.indentFirstLine = firstLine;
+    // Character-based indents (w:firstLineChars/hangingChars, chars*100) take
+    // precedence over twips when present (Word prefers the char semantics).
+    // Convert at the default 12pt body size; serializer writes chars back.
+    const TWELVE_PT_HALF_PTS = 24;
+    const firstLineChars = parseNumericAttribute(ind, 'w', 'firstLineChars');
+    if (firstLineChars !== undefined && firstLineChars !== 0) {
+      formatting.indentFirstLine = charsToTwips(
+        firstLineChars / 100,
+        TWELVE_PT_HALF_PTS,
+        'eastAsian'
+      );
+      formatting.firstLineChars = firstLineChars;
+    } else {
+      const firstLine = parseNumericAttribute(ind, 'w', 'firstLine');
+      if (firstLine !== undefined) formatting.indentFirstLine = firstLine;
+    }
 
-    const hanging = parseNumericAttribute(ind, 'w', 'hanging');
-    if (hanging !== undefined) {
-      formatting.indentFirstLine = -hanging;
+    const hangingChars = parseNumericAttribute(ind, 'w', 'hangingChars');
+    if (hangingChars !== undefined && hangingChars !== 0) {
+      formatting.indentFirstLine = -charsToTwips(
+        hangingChars / 100,
+        TWELVE_PT_HALF_PTS,
+        'eastAsian'
+      );
       formatting.hangingIndent = true;
+      formatting.hangingChars = hangingChars;
+    } else {
+      const hanging = parseNumericAttribute(ind, 'w', 'hanging');
+      if (hanging !== undefined) {
+        formatting.indentFirstLine = -hanging;
+        formatting.hangingIndent = true;
+      }
     }
   }
 

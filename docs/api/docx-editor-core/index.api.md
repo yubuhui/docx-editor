@@ -184,7 +184,7 @@ export interface CellCoordinates {
 }
 
 // @public
-export function charsToTwips(chars: number, fontSizeHalfPts: number): number;
+export function charsToTwips(chars: number, fontSizeHalfPts: number, script?: 'eastAsian' | 'latin' | 'auto'): number;
 
 // @public
 export interface ClipboardSelection {
@@ -1160,6 +1160,7 @@ export interface ParagraphFormatting {
         bar?: BorderSpec;
     };
     contextualSpacing?: boolean;
+    firstLineChars?: number;
     frame?: {
         width?: number;
         height?: number;
@@ -1171,6 +1172,7 @@ export interface ParagraphFormatting {
         yAlign?: 'top' | 'center' | 'bottom' | 'inside' | 'outside' | 'inline';
         wrap?: 'around' | 'auto' | 'none' | 'notBeside' | 'through' | 'tight';
     };
+    hangingChars?: number;
     hangingIndent?: boolean;
     indentFirstLine?: number;
     indentLeft?: number;
@@ -1879,7 +1881,7 @@ export type TrackedRunChange = Insertion | Deletion | MoveFrom | MoveTo;
 export function triggerPrint(): void;
 
 // @public
-export function twipsToChars(twips: number, fontSizeHalfPts: number): number;
+export function twipsToChars(twips: number, fontSizeHalfPts: number, script?: 'eastAsian' | 'latin' | 'auto'): number;
 
 // @public
 export function twipsToEmu(twips: number): number;
