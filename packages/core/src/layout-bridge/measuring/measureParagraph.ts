@@ -45,6 +45,7 @@ import {
   type TabContext,
 } from '../../prosemirror/utils/tabCalculator';
 import { getListMarkerInlineWidth } from './listMarkerWidth';
+import { findWordBreaks } from './lineBreak';
 
 // Default values - match OOXML spec defaults
 const DEFAULT_FONT_SIZE = 11; // 11pt (Word 2007+ default)
@@ -289,24 +290,6 @@ function measureInlineWidthAfterTab(runs: Run[], tabIndex: number): number {
     }
   }
   return width;
-}
-
-/**
- * Find word break points in text
- * Returns array of indices where words end (after space/punctuation)
- */
-function findWordBreaks(text: string): number[] {
-  const breaks: number[] = [];
-
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    // Break after space or certain punctuation
-    if (char === ' ' || char === '-' || char === '\t') {
-      breaks.push(i + 1);
-    }
-  }
-
-  return breaks;
 }
 
 /**
