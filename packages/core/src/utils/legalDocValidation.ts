@@ -11,18 +11,24 @@
 
 import type { ParagraphFormatting, TextFormatting } from '../types/formatting';
 
-/** 单条违反项。 */
+/** 校验规则代码（宿主据此本地化标签/文案/期望值）。 */
+export type LegalFormatRule = 'firstLineIndent' | 'lineSpacing' | 'fontSize';
+
+/** 实际值的结构：chars=字符数，pt=磅，multiple=行距倍数，missing=未设置。 */
+export interface LegalFormatActual {
+  kind: 'chars' | 'pt' | 'multiple' | 'missing';
+  /** 数值（missing 时省略）；chars=字符数，pt=磅，multiple=倍数。 */
+  value?: number;
+}
+
+/** 单条违反项（不含展示文案，宿主负责格式化）。 */
 export interface LegalFormatIssue {
   /** 段落序号（1-based，用于定位）。 */
   paragraphIndex: number;
-  /** 简短标题，如「首行缩进」「行距」「字号」。 */
-  rule: string;
-  /** 问题描述（中文，可直接展示）。 */
-  message: string;
-  /** 校验出的实际值（人类可读）。 */
-  actual?: string;
-  /** 期望值（人类可读）。 */
-  expected?: string;
+  /** 规则代码。 */
+  rule: LegalFormatRule;
+  /** 校验出的实际值（结构化）。 */
+  actual: LegalFormatActual;
 }
 
 /** 段落 + 其第一个 run 的格式化快照，供校验读取。 */
@@ -76,40 +82,37 @@ function checkBodyParagraph(p: ParagraphSnapshot): LegalFormatIssue[] {
   if (!firstLineIndentOk(p.ppr)) {
     issues.push({
       ...base,
-      rule: '首行缩进',
-      message: '正文段首行应缩进 2 字符（当前缺失或不是 2 字符）。',
+      rule: 'firstLineIndent',
       actual:
         p.ppr?.firstLineChars !== undefined
-          ? `${p.ppr.firstLineChars / 100}字符`
+          ? { kind: 'chars', value: p.ppr.firstLineChars / 100 }
           : p.ppr?.indentFirstLine !== undefined
-            ? `${Math.round((p.ppr.indentFirstLine / 20) * 10) / 10}pt`
-            : '无缩进',
-      expected: '2 字符',
+            ? { kind: 'pt', value: Math.round((p.ppr.indentFirstLine / 20) * 10) / 10 }
+            : { kind: 'missing' },
     });
   }
 
   if (!lineSpacingOk(p.ppr)) {
     issues.push({
       ...base,
-      rule: '行距',
-      message: '正文行距应为固定值 28 磅。',
+      rule: 'lineSpacing',
       actual:
         p.ppr?.lineSpacingRule === 'exact' && p.ppr?.lineSpacing !== undefined
-          ? `固定 ${Math.round(p.ppr.lineSpacing / 20)} 磅`
+          ? { kind: 'pt', value: Math.round(p.ppr.lineSpacing / 20) }
           : p.ppr?.lineSpacing !== undefined
-            ? `${Math.round((p.ppr.lineSpacing / 240) * 10) / 10} 倍`
-            : '未设置',
-      expected: '固定值 28 磅',
+            ? { kind: 'multiple', value: Math.round((p.ppr.lineSpacing / 240) * 10) / 10 }
+            : { kind: 'missing' },
     });
   }
 
   if (p.rpr && !fontSizeOk(p.rpr.fontSize, 24)) {
     issues.push({
       ...base,
-      rule: '字号',
-      message: '正文字号应为小四（12pt）。',
-      actual: p.rpr.fontSize !== undefined ? `${p.rpr.fontSize / 2}pt` : '未设置',
-      expected: '小四（12pt）',
+      rule: 'fontSize',
+      actual:
+        p.rpr.fontSize !== undefined
+          ? { kind: 'pt', value: p.rpr.fontSize / 2 }
+          : { kind: 'missing' },
     });
   }
 

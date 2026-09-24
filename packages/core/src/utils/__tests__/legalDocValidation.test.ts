@@ -26,21 +26,25 @@ describe('validateLegalFormatting', () => {
     expect(issues).toEqual([]);
   });
 
-  test('missing first-line indent is flagged', () => {
+  test('missing first-line indent is flagged with structured actual', () => {
     const issues = validateLegalFormatting([
       para(1, { lineSpacing: 560, lineSpacingRule: 'exact' }, { fontSize: 24 }),
     ]);
-    expect(issues.some((i) => i.rule === '首行缩进')).toBe(true);
+    const issue = issues.find((i) => i.rule === 'firstLineIndent');
+    expect(issue).toBeDefined();
+    expect(issue?.actual).toEqual({ kind: 'missing' });
   });
 
-  test('wrong line spacing (non-exact) is flagged', () => {
+  test('wrong line spacing (non-exact) is flagged with multiple actual', () => {
     const issues = validateLegalFormatting([
       para(1, { firstLineChars: 200, lineSpacing: 360, lineSpacingRule: 'auto' }, { fontSize: 24 }),
     ]);
-    expect(issues.some((i) => i.rule === '行距')).toBe(true);
+    const issue = issues.find((i) => i.rule === 'lineSpacing');
+    expect(issue).toBeDefined();
+    expect(issue?.actual).toEqual({ kind: 'multiple', value: 1.5 });
   });
 
-  test('wrong font size (not 小四) is flagged', () => {
+  test('wrong font size (not 小四) is flagged with pt actual', () => {
     const issues = validateLegalFormatting([
       para(
         1,
@@ -48,7 +52,9 @@ describe('validateLegalFormatting', () => {
         { fontSize: 32 }
       ),
     ]);
-    expect(issues.some((i) => i.rule === '字号')).toBe(true);
+    const issue = issues.find((i) => i.rule === 'fontSize');
+    expect(issue).toBeDefined();
+    expect(issue?.actual).toEqual({ kind: 'pt', value: 16 });
   });
 
   test('headings and empty paragraphs are skipped', () => {
@@ -67,7 +73,7 @@ describe('validateLegalFormatting', () => {
         { fontSize: 24 }
       ),
     ]);
-    expect(issues.some((i) => i.rule === '首行缩进')).toBe(true);
+    expect(issues.some((i) => i.rule === 'firstLineIndent')).toBe(true);
   });
 });
 

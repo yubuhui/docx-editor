@@ -5,13 +5,21 @@
 ```ts
 
 // @public
-export interface LegalFormatIssue {
-    actual?: string;
-    expected?: string;
-    message: string;
-    paragraphIndex: number;
-    rule: string;
+export interface LegalFormatActual {
+    // (undocumented)
+    kind: 'chars' | 'pt' | 'multiple' | 'missing';
+    value?: number;
 }
+
+// @public
+export interface LegalFormatIssue {
+    actual: LegalFormatActual;
+    paragraphIndex: number;
+    rule: LegalFormatRule;
+}
+
+// @public
+export type LegalFormatRule = 'firstLineIndent' | 'lineSpacing' | 'fontSize';
 
 // @public
 export interface ParagraphSnapshot {
