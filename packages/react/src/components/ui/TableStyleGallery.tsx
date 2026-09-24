@@ -6,6 +6,8 @@
  * to the current table via applyTableStyle command.
  */
 
+// color-token-ignore-file: Word built-in table-style preset colors + OOXML border fallback — document-domain data, not editor chrome.
+
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import type { CSSProperties } from 'react';
 import type { Style } from '@eigenpal/docx-editor-core/types/document';

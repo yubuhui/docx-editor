@@ -270,7 +270,7 @@ const ProgressVariant: React.FC<{
             justifyContent: 'center',
             fontSize,
             fontWeight: 500,
-            color: clampedProgress > 50 ? '#fff' : color,
+            color: clampedProgress > 50 ? 'var(--doc-on-accent)' : color,
           }}
         >
           {Math.round(clampedProgress)}%
@@ -372,7 +372,8 @@ export const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: `rgba(0, 0, 0, ${overlayOpacity})`,
+          // Fallback keeps standalone consumers (outside .ep-root) unchanged.
+          backgroundColor: `rgba(var(--doc-scrim-rgb, 0, 0, 0), ${overlayOpacity})`,
           zIndex: 10000,
           ...style,
         }}

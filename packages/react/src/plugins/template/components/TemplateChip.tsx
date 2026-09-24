@@ -3,6 +3,8 @@
  * Rendered inside the UnifiedSidebar via getSidebarItems.
  */
 
+// color-token-ignore-file: template tag palette + plugin chrome is self-contained plugin data, not editor chrome.
+
 // TemplateChip uses React.createElement in template/index.ts, so no direct JSX import needed here
 import type { SidebarItemRenderProps } from '../../../plugin-api/types';
 import type { TemplateTag, TagType } from '../prosemirror-plugin';

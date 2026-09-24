@@ -116,6 +116,7 @@ export function TableBorderWidthPicker({
                 style={{
                   width: 50,
                   height: Math.max(thickness, 1),
+                  // color-token-ignore: border-thickness preview line — glyph semantics, not themeable chrome
                   backgroundColor: '#000',
                   borderRadius: thickness > 2 ? 1 : 0,
                 }}

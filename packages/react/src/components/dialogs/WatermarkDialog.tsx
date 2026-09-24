@@ -146,6 +146,7 @@ export function WatermarkDialog({
   const [font, setFont] = useState('Calibri');
   const [autoSize, setAutoSize] = useState(true);
   const [fontSize, setFontSize] = useState(54);
+  // color-token-ignore: Word watermark default silver — document-domain value
   const [color, setColor] = useState('#C0C0C0');
   const [layout, setLayout] = useState<'diagonal' | 'horizontal'>('diagonal');
   const [semitransparent, setSemitransparent] = useState(true);
@@ -167,6 +168,7 @@ export function WatermarkDialog({
       setFont(current.font || 'Calibri');
       setAutoSize(current.fontSize === undefined);
       if (current.fontSize !== undefined) setFontSize(current.fontSize);
+      // color-token-ignore: Word watermark default silver — document-domain value
       setColor(current.color || '#C0C0C0');
       setLayout(current.layout);
       setSemitransparent(current.semitransparent);

@@ -5,6 +5,8 @@
  * Uses RenderedDomContext to get accurate positioning.
  */
 
+// color-token-ignore-file: template tag highlight palette is plugin data (tag-type colors), not editor chrome.
+
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import type { RenderedDomContext } from '../../../plugin-api/types';
 import type { TemplateTag, TagType } from '../prosemirror-plugin';

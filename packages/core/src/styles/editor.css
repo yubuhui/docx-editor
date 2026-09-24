@@ -118,6 +118,7 @@
   --doc-shadow: rgba(0, 0, 0, 0.15);
   --doc-shadow-strong: rgba(0, 0, 0, 0.3);
   --doc-shadow-subtle: rgba(0, 0, 0, 0.06);
+  --doc-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* small floating chrome (plugin panel toggles) */
   --doc-overlay: rgba(0, 0, 0, 0.5); /* modal backdrops */
 
   /* Sidebar card elevation (Google-grey, compound) — shared by React's
@@ -131,6 +132,27 @@
   /* Focus ring & text selection (derived from primary) */
   --doc-focus-ring: rgba(26, 115, 232, 0.4);
   --doc-selection: rgba(26, 115, 232, 0.3);
+
+  /* Fixed-color chrome that must NOT invert with the theme: portalled
+   * overlays, always-dark scrims, image handles. --doc-on-accent stays white
+   * in dark mode, where --doc-on-primary flips dark. */
+  --doc-on-accent: #ffffff;
+  --doc-scrim-rgb: 0, 0, 0; /* rgba(var(--doc-scrim-rgb), α) dynamic scrims */
+  --doc-image-accent: #2563eb; /* image selection box + resize handles */
+  --doc-swatch-bg: #ffffff; /* empty/transparent color swatch fill */
+  --doc-swatch-outline: #bbb; /* outline for transparent/light swatches */
+  --doc-selection-overlay: rgba(66, 133, 244, 0.3);
+  --doc-hf-caret: #4285f4;
+  --doc-hf-selection: rgba(66, 133, 244, 0.25);
+
+  /* Document-canvas highlights. The canvas is painted in light colors and
+   * inverted via `filter` in dark mode, so these are intentionally NOT
+   * overridden under .ep-root.dark (an override would invert wrong). */
+  --doc-comment-highlight-bg: rgba(255, 212, 0, 0.35);
+  --doc-comment-highlight-border: rgba(255, 212, 0, 0.7);
+  --doc-insertion-bg: rgba(52, 168, 83, 0.2);
+  --doc-insertion-border: #2e7d32;
+  --doc-deletion-bg: rgba(211, 47, 47, 0.2);
 
   /* Document scroll container scrollbar */
   --doc-scrollbar-size: 14px;
@@ -215,6 +237,7 @@
   --doc-shadow: rgba(0, 0, 0, 0.4);
   --doc-shadow-strong: rgba(0, 0, 0, 0.6);
   --doc-shadow-subtle: rgba(0, 0, 0, 0.2);
+  --doc-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   --doc-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2);
   --doc-card-shadow-strong: 0 1px 3px rgba(0, 0, 0, 0.5), 0 4px 8px 3px rgba(0, 0, 0, 0.3);
   --doc-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.5);

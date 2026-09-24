@@ -71,21 +71,21 @@ const PLUGIN_HOST_STYLES = `
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  background: #f8f9fa;
-  border-color: #e9ecef;
+  background: var(--doc-bg);
+  border-color: var(--doc-border-light);
 }
 
 .plugin-panels-left {
-  border-right: 1px solid #e9ecef;
+  border-right: 1px solid var(--doc-border-light);
 }
 
 .plugin-panels-right {
-  border-left: 1px solid #e9ecef;
+  border-left: 1px solid var(--doc-border-light);
 }
 
 .plugin-panels-bottom {
-  border-top: 1px solid #e9ecef;
-  background: #f8f9fa;
+  border-top: 1px solid var(--doc-border-light);
+  background: var(--doc-bg);
 }
 
 .plugin-panel {
@@ -109,7 +109,7 @@ const PLUGIN_HOST_STYLES = `
   border: none;
   cursor: pointer;
   font-size: 12px;
-  color: #6c757d;
+  color: var(--doc-text-muted);
   white-space: nowrap;
 }
 
@@ -122,8 +122,8 @@ const PLUGIN_HOST_STYLES = `
 }
 
 .plugin-panel-toggle:hover {
-  background: #e9ecef;
-  color: #495057;
+  background: var(--doc-bg-hover);
+  color: var(--doc-text-muted);
 }
 
 .plugin-panel-toggle-icon {
@@ -162,9 +162,9 @@ const PLUGIN_HOST_STYLES = `
 .plugin-panel-in-viewport .plugin-panel-toggle {
   position: sticky;
   top: 0;
-  background: rgba(255, 255, 255, 0.95);
+  background: color-mix(in srgb, var(--doc-surface) 95%, transparent);
   border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--doc-shadow-sm);
 }
 
 .plugin-panel-in-viewport-content {

@@ -51,7 +51,7 @@ Empty-doc specs (`formatting`, `text-editing`) use `editor.gotoEmpty()`. Demo-as
 - 保留：`packages/agents/src/vue/**` 及其构建（root devDeps 的 `vue` / `@vitejs/plugin-vue` / `vue-eslint-parser` 因此保留）。
 - 平台无关逻辑一律下沉 `packages/core/`（即使只有一个适配器，也让行为可单测、可复用）；不要把共享逻辑复制进 adapter。eslint 的 framework-isolation 规则继续强制 core/react/agents-vue 互不越界导入。
 - editor chrome 样式与颜色 token 只在 `packages/core/src/styles/editor.css` 单一来源；adapter 的 `src/styles/editor.css` 保持 import-only，受 `bun run check:adapter-css-thin` 强制。
-- `check:parity` = `check:public-docs-surface && check:adapter-css-thin`；不要重新引入 React/Vue 对比门禁。
+- `check:parity` = `check:public-docs-surface && check:adapter-css-thin && check:ui-colors`；不要重新引入 React/Vue 对比门禁。
 
 ---
 
@@ -144,6 +144,7 @@ Shared orchestration lives in core — the React adapter delegates through thin 
 
 - **Icons** — inline SVG in `components/ui/Icons.tsx`, NOT a font. `<MaterialSymbol name="x">` looks up `iconMap`; missing → renders raw text. Add SVG paths from fonts.google.com/icons.
 - **Tailwind scope** — library scoped to `.ep-root`. Painter output isn't always protected → use inline styles on painted elements.
+- **Colors** — chrome colors reference the `--doc-*` tokens defined in `packages/core/src/styles/editor.css` (single source); new tokens go in its light block, with a `.ep-root.dark` override only when the surface itself is theme-variant. Document-domain/OOXML values and decorative artwork stay literal and carry a `color-token-ignore: <reason>` (same/previous line) or `color-token-ignore-file: <reason>` comment — enforced by `bun run check:ui-colors`. Canvas highlight tokens (`--doc-comment-highlight-*`, `--doc-insertion-*`, `--doc-deletion-*`) are never overridden in dark mode: the canvas is inverted with `filter`.
 - **Focus stealing** — any mousedown that bubbles to PM moves caret. Dropdown/dialog mousedown needs `stopPropagation()`.
 - **Motion** — new animation keyframes are defined in `packages/core/src/styles/editor.css` (single source) and referenced by name from components; extend the `prefers-reduced-motion: reduce` block at the end of that file whenever a new animation/transition lands so playback collapses while state stays intact. Keyframes defined locally in an adapter (or injected at runtime) are invisible to that block.
 - **No `require()`** — ESM only.

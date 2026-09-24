@@ -514,7 +514,7 @@ export function DocxEditorPagedArea({
                       left: hfCaretRect.left,
                       width: 2,
                       height: hfCaretRect.height,
-                      background: '#4285f4',
+                      background: 'var(--doc-hf-caret)',
                       pointerEvents: 'none',
                       zIndex: 11,
                     }}
@@ -532,7 +532,7 @@ export function DocxEditorPagedArea({
                       left: r.left,
                       width: r.width,
                       height: r.height,
-                      background: 'rgba(66, 133, 244, 0.25)',
+                      background: 'var(--doc-hf-selection)',
                       pointerEvents: 'none',
                       zIndex: 10,
                     }}

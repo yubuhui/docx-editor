@@ -242,6 +242,7 @@ function resolveCurrentColor(
   theme: Theme | null | undefined
 ): string {
   if (!value) {
+    // color-token-ignore: OOXML default for text/border color — document-domain value
     return mode === 'text' || mode === 'border' ? '#000000' : 'transparent';
   }
   if (typeof value === 'string') {
@@ -564,10 +565,11 @@ export function ColorPicker({
             <div
               style={{
                 ...S_COLOR_BAR,
-                backgroundColor: swatchColor === 'transparent' ? '#fff' : swatchColor,
+                backgroundColor:
+                  swatchColor === 'transparent' ? 'var(--doc-swatch-bg)' : swatchColor,
                 outline:
                   swatchColor === 'transparent' || isLightColor(swatchColor)
-                    ? '1px solid #bbb'
+                    ? '1px solid var(--doc-swatch-outline)'
                     : 'none',
               }}
             />
@@ -621,10 +623,11 @@ export function ColorPicker({
             <div
               style={{
                 ...S_COLOR_BAR,
-                backgroundColor: resolvedColor === 'transparent' ? '#fff' : resolvedColor,
+                backgroundColor:
+                  resolvedColor === 'transparent' ? 'var(--doc-swatch-bg)' : resolvedColor,
                 outline:
                   resolvedColor === 'transparent' || isLightColor(resolvedColor)
-                    ? '1px solid #bbb'
+                    ? '1px solid var(--doc-swatch-outline)'
                     : 'none',
               }}
             />
@@ -661,10 +664,10 @@ export function ColorPicker({
                     display: 'inline-block',
                     width: '16px',
                     height: '16px',
-                    border: '1px solid #ccc',
+                    border: '1px solid var(--doc-border-input)',
                     borderRadius: '2px',
                     position: 'relative',
-                    backgroundColor: '#fff',
+                    backgroundColor: 'var(--doc-swatch-bg)',
                   }}
                 >
                   <span
@@ -674,6 +677,7 @@ export function ColorPicker({
                       left: '-1px',
                       right: '-1px',
                       height: '2px',
+                      // color-token-ignore: "automatic/no color" glyph — the red slash is document-domain semantics
                       backgroundColor: '#ff0000',
                       transform: 'rotate(-45deg)',
                     }}
@@ -685,6 +689,7 @@ export function ColorPicker({
                     display: 'inline-block',
                     width: '16px',
                     height: '16px',
+                    // color-token-ignore: "automatic" glyph — the black square is document-domain semantics
                     backgroundColor: '#000',
                     borderRadius: '2px',
                   }}

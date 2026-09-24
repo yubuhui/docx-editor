@@ -67,7 +67,7 @@ export interface ImageSelectionOverlayProps {
 const HANDLE_SIZE = 10;
 const HANDLE_HALF = HANDLE_SIZE / 2;
 const BORDER_WIDTH = 2;
-const ACCENT_COLOR = '#2563eb'; // Blue-600
+const ACCENT_COLOR = 'var(--doc-image-accent)';
 
 const overlayStyles: CSSProperties = {
   position: 'absolute',
@@ -93,10 +93,10 @@ const handleBaseStyles: CSSProperties = {
   position: 'absolute',
   width: `${HANDLE_SIZE}px`,
   height: `${HANDLE_SIZE}px`,
-  backgroundColor: '#ffffff',
+  backgroundColor: 'var(--doc-swatch-bg)',
   border: `1.5px solid ${ACCENT_COLOR}`,
   borderRadius: '50%',
-  boxShadow: '0 1px 2.5px rgba(0, 0, 0, 0.35)',
+  boxShadow: '0 1px 2.5px rgba(var(--doc-scrim-rgb), 0.35)',
   boxSizing: 'border-box',
   pointerEvents: 'auto',
   zIndex: 16,
@@ -104,7 +104,7 @@ const handleBaseStyles: CSSProperties = {
 
 const dimensionStyles: CSSProperties = {
   position: 'absolute',
-  backgroundColor: 'rgba(0, 0, 0, 0.75)',
+  backgroundColor: 'rgba(var(--doc-scrim-rgb), 0.75)',
   color: 'var(--doc-on-primary)',
   fontSize: '11px',
   fontFamily: 'system-ui, sans-serif',
@@ -355,10 +355,12 @@ export function ImageSelectionOverlay({
 
           // Create ghost element
           ghostEl = document.createElement('div');
+          // The ghost is appended to document.body (outside .ep-root), so the
+          // token needs its fallback here to keep the drag preview visible.
           ghostEl.style.cssText =
             'position: fixed; pointer-events: none; z-index: 10000; ' +
-            'opacity: 0.5; border: 2px dashed #2563eb; border-radius: 4px; ' +
-            'background: rgba(37, 99, 235, 0.1);';
+            'opacity: 0.5; border: 2px dashed var(--doc-image-accent, #2563eb); border-radius: 4px; ' +
+            'background: color-mix(in srgb, var(--doc-image-accent, #2563eb) 10%, transparent);';
           ghostEl.style.width = `${overlayRect.width}px`;
           ghostEl.style.height = `${overlayRect.height}px`;
           document.body.appendChild(ghostEl);

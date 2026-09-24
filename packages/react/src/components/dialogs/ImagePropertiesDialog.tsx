@@ -144,6 +144,7 @@ export function ImagePropertiesDialog({
   const { t } = useTranslation();
   const [alt, setAlt] = useState('');
   const [borderWidth, setBorderWidth] = useState(0);
+  // color-token-ignore: OOXML image-border default — document-domain value
   const [borderColor, setBorderColor] = useState('#000000');
   const [borderStyle, setBorderStyle] = useState('solid');
   const { width, height, lockAspect, setLockAspect, handleWidthChange, handleHeightChange, seed } =
@@ -156,6 +157,7 @@ export function ImagePropertiesDialog({
     if (!isOpen) return;
     setAlt(currentData?.alt ?? '');
     setBorderWidth(currentData?.borderWidth ?? 0);
+    // color-token-ignore: OOXML image-border default — document-domain value
     setBorderColor(currentData?.borderColor ?? '#000000');
     setBorderStyle(currentData?.borderStyle ?? 'solid');
     seed(currentData?.width, currentData?.height);

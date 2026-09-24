@@ -8,6 +8,8 @@
  * - TitleBarRight: right-aligned actions slot
  */
 
+// color-token-ignore-file: DefaultDocIcon is decorative brand SVG artwork (fixed palette by design), not themeable chrome.
+
 import React, { useCallback, Children, isValidElement } from 'react';
 import type { ReactNode } from 'react';
 import { MenuDropdown } from './ui/MenuDropdown';
