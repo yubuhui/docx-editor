@@ -1241,7 +1241,9 @@ export class EditorPage {
     // loading to settle, then reset.
     await this.waitForDocumentTextStable();
 
-    await this.page.locator('button:has-text("New")').click();
+    // Exact match: `has-text("New")` also matches the font-family button when
+    // the current font is "Times New Roman" (strict-mode violation).
+    await this.page.getByRole('button', { name: 'New', exact: true }).click();
 
     // Confirm the editor actually reset to an empty document before returning.
     await this.page.waitForFunction(
