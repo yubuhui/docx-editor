@@ -1,6 +1,6 @@
 ---
 title: 'Quickstart'
-description: 'Load, edit, and save a .docx in the browser. Copy-paste setup for the React and Vue adapters.'
+description: 'Load, edit, and save a .docx in the browser. Copy-paste setup for the React adapter.'
 category: 'Getting Started'
 ---
 
@@ -12,27 +12,11 @@ This page creates a browser editor that opens a local `.docx` file and downloads
 
 ### Install
 
-Either adapter pulls in `@eigenpal/docx-editor-core` and `@eigenpal/docx-editor-i18n` transitively. One install is enough.
-
-<Tabs items={['React', 'Vue']}>
-
-<Tab value="React">
+The React adapter pulls in `@eigenpal/docx-editor-core` and `@eigenpal/docx-editor-i18n` transitively. One install is enough.
 
 ```bash
 npm install @eigenpal/docx-editor-react
 ```
-
-</Tab>
-
-<Tab value="Vue">
-
-```bash
-npm install @eigenpal/docx-editor-vue
-```
-
-</Tab>
-
-</Tabs>
 
 On Next.js, Remix, or other SSR frameworks the editor must render client-side. On Next.js, mounting it during SSR throws `window is not defined`; use the `dynamic()` recipe in [Installation](/docs/1.x/installation), which also covers the other frameworks. The code below works in client-rendered apps such as Vite.
 
@@ -43,10 +27,6 @@ On Next.js, Remix, or other SSR frameworks the editor must render client-side. O
 ### Load, edit, save
 
 The complete flow in one file. A file input feeds the editor, the editor handles all editing (typing, formatting, undo, tables, tracked changes), and a button serializes the current state back to a `.docx` download.
-
-<Tabs items={['React', 'Vue']}>
-
-<Tab value="React">
 
 ```tsx
 // App.tsx
@@ -75,11 +55,7 @@ export default function App() {
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
       <div style={{ padding: 8, display: 'flex', gap: 8 }}>
-        <input
-          type="file"
-          accept=".docx"
-          onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-        />
+        <input type="file" accept=".docx" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
         <button onClick={download}>Download .docx</button>
       </div>
       {file && <DocxEditor ref={editorRef} documentBuffer={file} mode="editing" />}
@@ -87,54 +63,6 @@ export default function App() {
   );
 }
 ```
-
-</Tab>
-
-<Tab value="Vue">
-
-```vue
-<!-- App.vue -->
-<script setup lang="ts">
-import { ref } from 'vue';
-import { DocxEditor, type DocxEditorRef } from '@eigenpal/docx-editor-vue';
-import '@eigenpal/docx-editor-vue/styles.css';
-
-const editorRef = ref<DocxEditorRef | null>(null);
-const file = ref<File | null>(null);
-
-function onPick(e: Event) {
-  file.value = (e.target as HTMLInputElement).files?.[0] ?? null;
-}
-
-async function download() {
-  const buffer = await editorRef.value?.save();
-  if (!buffer) return;
-  const blob = new Blob([buffer], {
-    type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = file.value?.name ?? 'document.docx';
-  a.click();
-  URL.revokeObjectURL(url);
-}
-</script>
-
-<template>
-  <div style="height: 100vh; display: flex; flex-direction: column">
-    <div style="padding: 8px; display: flex; gap: 8px">
-      <input type="file" accept=".docx" @change="onPick" />
-      <button @click="download">Download .docx</button>
-    </div>
-    <DocxEditor v-if="file" ref="editorRef" :document-buffer="file" mode="editing" />
-  </div>
-</template>
-```
-
-</Tab>
-
-</Tabs>
 
 Three things to know about this code:
 
@@ -177,7 +105,7 @@ No file handy? Try the [live demo](https://docx-editor.dev/editor) first.
 
 ## Next steps
 
-- [Installation](/docs/1.x/installation) for Next.js, Remix, Astro, and Nuxt specifics
+- [Installation](/docs/1.x/installation) for Next.js, Remix, and Astro specifics
 - [Word fidelity](/docs/1.x/word-fidelity) if you're evaluating feature support and round-trip behavior
 - [React props and ref methods](/docs/1.x/react/props) for everything `<DocxEditor>` can do
 - [Agents](/docs/1.x/agents) to wire AI tools to the editor

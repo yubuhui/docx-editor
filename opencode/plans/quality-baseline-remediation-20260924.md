@@ -3,7 +3,9 @@
 > 仓库：`D:\Ai_Project\lawyer_assistant\.lawyer\docx-editor-src`（fork 自维护线，见 SELF-MAINTENANCE.md）
 > 本版替代 2026-09-24 早期《质量底线规范化改造》版本（Vue 范围作废，保留其 React 部分按裁剪后重排）。
 > 红线（不得破坏）：`.ep-root` 类名前缀不迁移；修订/评论留在 free core；`packages/*/dist` 不提交；`i18n → core → agents → react` 四包构建链保持可用。
-> 状态：**主进程复核通过（含小瑕疵修正，见第五节）；4 项已裁决：①发布链删除 ②docs/site 全量清扫 ③手写 X SVG 一并换 ④smoke 覆盖现在移植（正文已按裁决更新）。**
+> 状态：**执行中。阶段 0（架构裁剪，commit e4d2c50）✅；阶段 1（文档改造）✅ 待提交；阶段 2-7 待执行。**
+> 4 项已裁决：①发布链删除 ②docs/site 全量清扫 ③手写 X SVG 一并换 ④smoke 覆盖现在移植。
+> 环境注意：一律 `bunx playwright`（npx 会逃逸到父项目）；浏览器镜像 `PLAYWRIGHT_DOWNLOAD_HOST=https://cdn.npmmirror.com/binaries/playwright`。
 
 ---
 
@@ -79,7 +81,7 @@ bun run --filter @eigenpal/docx-editor-react build
 bun run api:check
 bun run check:i18n-bundle-size
 bun run docs:json
-npx playwright test --project=chromium e2e/tests/formatting.spec.ts e2e/tests/text-editing.spec.ts --timeout=30000 --workers=4
+bunx playwright test --project=chromium e2e/tests/formatting.spec.ts e2e/tests/text-editing.spec.ts --timeout=30000 --workers=4
 # 反证 grep（期望 0 命中）：
 rg -n "docx-editor-vue|nuxt-docx-editor|examples/(vue|nuxt|parity)|project=(vue|nuxt|parity)" package.json playwright.config.ts .github scripts eslint.config.js .husky
 ```
@@ -145,9 +147,9 @@ bun run check:parity
 bun run typecheck
 bun test packages/core
 bun run check:adapter-css-thin
-npx playwright test e2e/tests/reduced-motion.spec.ts --timeout=30000 --workers=4
-npx playwright test e2e/tests/issue-928-zoom-caret-height.spec.ts e2e/tests/hf-selection-rects.spec.ts e2e/tests/hf-click-and-type.spec.ts --timeout=30000 --workers=4
-npx playwright test e2e/tests/visual-regression.spec.ts --grep "loading" --timeout=30000 --workers=4
+bunx playwright test e2e/tests/reduced-motion.spec.ts --timeout=30000 --workers=4
+bunx playwright test e2e/tests/issue-928-zoom-caret-height.spec.ts e2e/tests/hf-selection-rects.spec.ts e2e/tests/hf-click-and-type.spec.ts --timeout=30000 --workers=4
+bunx playwright test e2e/tests/visual-regression.spec.ts --grep "loading" --timeout=30000 --workers=4
 # 若 grep 无匹配：全跑 visual-regression.spec.ts 或人工截图对比，不跳过
 ```
 
@@ -206,9 +208,9 @@ npx playwright test e2e/tests/visual-regression.spec.ts --grep "loading" --timeo
 node scripts/check-ui-color-tokens.mjs
 bun run check:parity
 bun run typecheck
-npx playwright test e2e/tests/split-color-button.spec.ts e2e/tests/colors.spec.ts --timeout=30000 --workers=4
-npx playwright test e2e/tests/comments-sidebar.spec.ts --timeout=30000 --workers=4
-npx playwright test e2e/tests/image-resize-handles.spec.ts e2e/tests/image-layout-modes.spec.ts --timeout=30000 --workers=4
+bunx playwright test e2e/tests/split-color-button.spec.ts e2e/tests/colors.spec.ts --timeout=30000 --workers=4
+bunx playwright test e2e/tests/comments-sidebar.spec.ts --timeout=30000 --workers=4
+bunx playwright test e2e/tests/image-resize-handles.spec.ts e2e/tests/image-layout-modes.spec.ts --timeout=30000 --workers=4
 # 反例自检：临时加 '#123456' → 脚本必须失败；验完删除
 ```
 
@@ -232,8 +234,8 @@ npx playwright test e2e/tests/image-resize-handles.spec.ts e2e/tests/image-layou
 ```bash
 bun run typecheck
 bun test packages/core/src/prosemirror/utils/visualLineNavigation.test.ts
-npx playwright test e2e/tests/visual-line-navigation.spec.ts --timeout=30000 --workers=4
-npx playwright test e2e/tests/paged-editor-clicks.spec.ts e2e/tests/formatting-persistence.spec.ts --timeout=30000 --workers=4
+bunx playwright test e2e/tests/visual-line-navigation.spec.ts --timeout=30000 --workers=4
+bunx playwright test e2e/tests/paged-editor-clicks.spec.ts e2e/tests/formatting-persistence.spec.ts --timeout=30000 --workers=4
 bun run check:parity
 ```
 
@@ -258,8 +260,8 @@ bun run check:parity
 ```bash
 bun run typecheck
 bun run check:parity
-npx playwright test e2e/tests/find-replace-shortcuts.spec.ts e2e/tests/hyperlinks.spec.ts e2e/tests/help-menu.spec.ts --timeout=30000 --workers=4
-npx playwright test e2e/tests/table-context-menu.spec.ts --timeout=30000 --workers=4
+bunx playwright test e2e/tests/find-replace-shortcuts.spec.ts e2e/tests/hyperlinks.spec.ts e2e/tests/help-menu.spec.ts --timeout=30000 --workers=4
+bunx playwright test e2e/tests/table-context-menu.spec.ts --timeout=30000 --workers=4
 # 人工截图前后对比（screenshots/）确认 ContextMenu 字形可接受
 ```
 
@@ -278,8 +280,8 @@ npx playwright test e2e/tests/table-context-menu.spec.ts --timeout=30000 --worke
 
 ```bash
 bun run typecheck
-npx playwright test e2e/tests/dialog-focus.spec.ts e2e/tests/cursor-focus.spec.ts --timeout=30000 --workers=4
-npx playwright test e2e/tests/find-replace-shortcuts.spec.ts e2e/tests/hyperlinks.spec.ts e2e/tests/table-context-menu.spec.ts e2e/tests/help-menu.spec.ts --timeout=30000 --workers=4
+bunx playwright test e2e/tests/dialog-focus.spec.ts e2e/tests/cursor-focus.spec.ts --timeout=30000 --workers=4
+bunx playwright test e2e/tests/find-replace-shortcuts.spec.ts e2e/tests/hyperlinks.spec.ts e2e/tests/table-context-menu.spec.ts e2e/tests/help-menu.spec.ts --timeout=30000 --workers=4
 ```
 
 **回滚**：`git revert`。
@@ -289,12 +291,12 @@ npx playwright test e2e/tests/find-replace-shortcuts.spec.ts e2e/tests/hyperlink
 ### 阶段 7：CI e2e smoke（chromium-only）
 
 **目标**：主 CI 仍不跑全量，但补最小浏览器冒烟作业。
-**涉及文件**：新增 `.github/workflows/e2e-smoke.yml`——`bun install --frozen-lockfile` + `npx playwright install --with-deps chromium` + `--project=chromium e2e/tests/{formatting,text-editing,comments-sidebar}.spec.ts`；dev server 由 Playwright webServer 拉起（config 已 React-only）；`timeout-minutes: 20`；浏览器安装写法参照 `perf-check.yml:52-53`。
+**涉及文件**：新增 `.github/workflows/e2e-smoke.yml`——`bun install --frozen-lockfile` + `bunx playwright install --with-deps chromium` + `--project=chromium e2e/tests/{formatting,text-editing,comments-sidebar}.spec.ts`；dev server 由 Playwright webServer 拉起（config 已 React-only）；`timeout-minutes: 20`；浏览器安装写法参照 `perf-check.yml:52-53`。
 
 **验证命令（本地等价）**
 
 ```bash
-npx playwright test --project=chromium e2e/tests/formatting.spec.ts e2e/tests/text-editing.spec.ts e2e/tests/comments-sidebar.spec.ts --timeout=30000 --workers=4
+bunx playwright test --project=chromium e2e/tests/formatting.spec.ts e2e/tests/text-editing.spec.ts e2e/tests/comments-sidebar.spec.ts --timeout=30000 --workers=4
 ```
 
 **回滚**：删该文件即可。

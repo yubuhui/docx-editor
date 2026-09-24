@@ -38,8 +38,6 @@ export function BrandedEditor() {
 }
 ```
 
-For Vue, pass the template buffer to the `document-buffer` prop.
-
 ## Create a template
 
 ### Use a word processor
@@ -61,10 +59,7 @@ const SETTINGS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
   <w:defaultTableStyle w:val="BrandGrid"/>
 </w:settings>`;
 
-const branded = await updateMultipleFiles(
-  originalDocx,
-  new Map([['word/settings.xml', SETTINGS]])
-);
+const branded = await updateMultipleFiles(originalDocx, new Map([['word/settings.xml', SETTINGS]]));
 ```
 
 ## Headings and paragraph styles
@@ -96,14 +91,10 @@ const FONTS = [
   { family: 'Custom Sans', src: '/fonts/CustomSans-Bold.woff2', weight: 700 },
 ];
 
-<DocxEditor
-  documentBuffer={template}
-  fonts={FONTS}
-  fontFamilies={['Custom Sans', 'Arial']}
-/>;
+<DocxEditor documentBuffer={template} fonts={FONTS} fontFamilies={['Custom Sans', 'Arial']} />;
 ```
 
-See [React props: Fonts](/docs/1.x/react/props#fonts) for the full API. In Vue, use the `fonts` and `font-families` props.
+See [React props: Fonts](/docs/1.x/react/props#fonts) for the full API.
 
 Alternatively, fonts can be installed on the user's system or loaded using your own `@font-face` rules. The editor renders fonts by name, so any font available to the browser can be used.
 

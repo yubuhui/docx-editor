@@ -68,7 +68,7 @@ An unmatched filter throws `ContentControlNotFoundError`.
 templates — e.g. a `date` control in the header and the body), enumerate with
 `findContentControls` and disambiguate by `id`, then edit each.
 
-## Editor ref (React / Vue)
+## Editor ref (React)
 
 The same operations are on `DocxEditorRef`, running against the live editor so
 writes are normal undoable edits.
@@ -99,7 +99,7 @@ setContentControlValue(doc, { tag: 'status' }, { kind: 'dropdown', value: '2' })
 setContentControlValue(doc, { tag: 'agree' }, { kind: 'checkbox', checked: true });
 setContentControlValue(doc, { tag: 'effective' }, { kind: 'date', date: '2026-06-01' });
 
-// editor ref (React / Vue)
+// editor ref (React)
 ref.current?.setContentControlValue({ tag: 'status' }, { kind: 'dropdown', value: '2' });
 ```
 
@@ -115,10 +115,10 @@ list is not supported yet.
 In the editor, typed controls render a small trigger at the top-right of their
 box (revealed on hover/focus). Clicking it toggles a checkbox, opens a menu of
 the dropdown's items, or opens a date picker — each runs through
-`setContentControlValue` as a normal undoable edit. Available in both the React
-and Vue adapters; no wiring required. The trigger is a focusable button and the
-dropdown menu is arrow-key navigable (Enter to choose, Escape to close). Data-
-bound and content-locked controls don't render a trigger.
+`setContentControlValue` as a normal undoable edit. No wiring is required. The
+trigger is a focusable button and the dropdown menu is arrow-key navigable
+(Enter to choose, Escape to close). Data-bound and content-locked controls don't
+render a trigger.
 
 ## Reading bound / typed state
 

@@ -1,41 +1,57 @@
-# Eigenpal DOCX Editor
+# Eigenpal DOCX Editor（React-only fork）
 
-Bun + React/Vue WYSIWYG editor for DOCX. Client-side only, no backend.
-Per-package entries: `packages/react/src/index.ts`, `packages/vue/src/index.ts`, `packages/core/src/headless.ts`.
+Bun + React WYSIWYG editor for DOCX. Client-side only, no backend.
+Per-package entries: `packages/react/src/index.ts`, `packages/core/src/headless.ts`, `packages/agents/src/index.ts`, `packages/i18n/src/index.ts`.
 Output must look identical to MS Word. Preserve fonts, theme colors, styles, tables, headers/footers, section layout.
+
+本仓库是律师助手主仓库内嵌编辑器的 fork 自维护线（基于上游 1.9.0）：构建链、双仓提交与自维护红线见 `SELF-MAINTENANCE.md`。**Vue/Nuxt 架构已移除**；唯一保留的 Vue 代码是 `packages/agents/src/vue/**`（agents 包 Vue UI，仍参与构建/类型检查/lint）。
 
 ---
 
 ## Verify
 
 ```bash
-bun run typecheck && npx playwright test --grep "<pattern>" --timeout=30000 --workers=4
+bun run typecheck && bunx playwright test --grep "<pattern>" --timeout=30000 --workers=4
 ```
 
-- Never run full suite (500+ tests) unless final validation.
-- Per-test timeout 30s; if cmd >60s, narrow scope.
+- Never run full suite (~460 tests) unless final validation.
+- Per-test timeout 30s; if cmd >60s, narrow scope. 慢机器上打字类用例（如 `text-editing.spec.ts` 的 “very long text input”）需要更大超时：`--timeout=60000 --workers=1`。
 - `bun run format` before pushing.
+- **一律用 `bunx playwright`，不要 `npx playwright`**：npx 会向上逃逸到父项目 `lawyer_assistant/node_modules/playwright`（另一版本），造成双实例报错 `Playwright Test did not expect test.describe() to be called here`。
+- 首次安装浏览器：`bunx playwright install --only-shell chromium`；慢网络可先设 `PLAYWRIGHT_DOWNLOAD_HOST=https://cdn.npmmirror.com/binaries/playwright` 再执行。
 
 ### Test file map
 
-| Area                  | File                           |
-| --------------------- | ------------------------------ |
-| Bold/Italic/Underline | `formatting.spec.ts`           |
-| Alignment             | `alignment.spec.ts`            |
-| Lists                 | `lists.spec.ts`                |
-| Colors                | `colors.spec.ts`               |
-| Fonts                 | `fonts.spec.ts`                |
-| Enter/Paragraphs      | `text-editing.spec.ts`         |
-| Undo/Redo             | `scenario-driven.spec.ts`      |
-| Line spacing          | `line-spacing.spec.ts`         |
-| Paragraph styles      | `paragraph-styles.spec.ts`     |
-| Toolbar state         | `toolbar-state.spec.ts`        |
-| Cursor-only ops       | `cursor-paragraph-ops.spec.ts` |
-| Comments sidebar      | `comments-sidebar.spec.ts`     |
+| Area                  | File                                                    |
+| --------------------- | ------------------------------------------------------- |
+| Bold/Italic/Underline | `formatting.spec.ts`                                    |
+| Alignment             | `alignment.spec.ts`                                     |
+| Lists                 | `lists.spec.ts`                                         |
+| Colors                | `colors.spec.ts`                                        |
+| Fonts                 | `fonts.spec.ts`                                         |
+| Enter/Paragraphs      | `text-editing.spec.ts`                                  |
+| Undo/Redo             | `scenario-driven.spec.ts`                               |
+| Line spacing          | `line-spacing.spec.ts`                                  |
+| Paragraph styles      | `paragraph-styles.spec.ts`                              |
+| Toolbar state         | `toolbar-state.spec.ts`                                 |
+| Cursor-only ops       | `cursor-paragraph-ops.spec.ts`                          |
+| Comments sidebar      | `comments-sidebar.spec.ts`                              |
+| Footnotes             | `footnote-bottom-overflow.spec.ts`                      |
+| Watermarks            | `watermark-render.spec.ts`, `watermark-presets.spec.ts` |
 
 Run `comments-sidebar.spec.ts` when touching any of these (all under `packages/react/src/`): `components/UnifiedSidebar.tsx`, `components/sidebar/**`, `hooks/useCommentSidebarItems.tsx`, `components/DocxEditor/hooks/useSelectionOverlay.ts` (`updateSelectionOverlay`/`onSelectionChange`), `components/DocxEditor.tsx` (`onSelectionChange` handler, `expandedSidebarItem` state).
 
 Empty-doc specs (`formatting`, `text-editing`) use `editor.gotoEmpty()`. Demo-asserting specs use `editor.goto()`. Don't mix in one spec.
+
+---
+
+## React-only boundary
+
+- 已删除：`packages/{vue,nuxt}`、`examples/{vue,nuxt,parity}`、`e2e/tests/{vue,nuxt,parity}`、React/Vue parity 工具链（`check-export-parity` / `check-editor-contract` / `check-feature-parity` / `check-parity-contract` / `check-consumer-install`、`scripts/parity/`、双端 perf 脚本、`scripts/extract-icons.mjs`）、changesets/release 发布链。
+- 保留：`packages/agents/src/vue/**` 及其构建（root devDeps 的 `vue` / `@vitejs/plugin-vue` / `vue-eslint-parser` 因此保留）。
+- 平台无关逻辑一律下沉 `packages/core/`（即使只有一个适配器，也让行为可单测、可复用）；不要把共享逻辑复制进 adapter。eslint 的 framework-isolation 规则继续强制 core/react/agents-vue 互不越界导入。
+- editor chrome 样式与颜色 token 只在 `packages/core/src/styles/editor.css` 单一来源；adapter 的 `src/styles/editor.css` 保持 import-only，受 `bun run check:adapter-css-thin` 强制。
+- `check:parity` = `check:public-docs-surface && check:adapter-css-thin`；不要重新引入 React/Vue 对比门禁。
 
 ---
 
@@ -52,29 +68,14 @@ Click flow: `usePagesPointer.handlePagesMouseDown` → `getPositionFromMouse` (b
 
 Header/footer editing follows the same model as the body: the persistent hidden HF PM is the sole editor; the painter is the sole visible renderer in both edit and non-edit modes. The `InlineHeaderFooterEditor` overlay is UI chrome only (separator bar, options menu, save-on-close) — it does NOT mount its own EditorView. There is no `.hf-editor-pm` CSS — those workarounds existed to make PM's `toDOM` tables match the painter's flex layout and are gone now that the painter is the sole renderer. See `openspec/changes/unify-hf-editing/` for the design.
 
-Vue host: `useDocxEditor()` in `packages/vue/src/composables/useDocxEditor.ts`. Dual-rendering rule applies to Vue too — the composable mounts the same per-`rId` persistent HF EditorView pattern (via `syncHfPMs` / `getHfPmView` / `setHfTransactionListener`) and routes HF rendering through `convertHeaderFooterPmDocToContent` in lockstep with React.
+**UI styling / colors are single-source-of-truth.** All editor chrome CSS + color tokens live in `packages/core/src/styles/editor.css`; the React adapter only `@import` it (the adapter `src/styles/editor.css` must stay thin — enforced by `bun run check:adapter-css-thin`). Never hardcode hex/rgba in components — use the `--doc-*` tokens (or shadcn token utilities like `bg-primary`). The shared Tailwind theme lives in `packages/core/tailwind-preset.cjs`. Dark mode is a token override under `.ep-root.dark` (scaffold in the core stylesheet). The document canvas (painter output) is intentionally NOT themed — it stays Word-faithful.
 
-### React/Vue parity
+### FlowBlock invariant — 2 switches
 
-Changes to layout / measurement / paint behavior MUST land in both adapters in the same PR. The Vue composable mirrors the React `PagedEditor`; if you touch only one, the other regresses silently.
-
-Before merging a change in `packages/react/`:
-
-- Find the Vue counterpart in `packages/vue/src/composables/useDocxEditor.ts` (or under `packages/vue/src/`) and apply the same behavior change.
-- If the change is platform-agnostic logic, lift it into `packages/core/` and have both adapters call it. The float-zone pipeline (`measureBlocksWithFloats` in `packages/core/src/layout-bridge/measuring/measureBlocksPipeline.ts`) is the canonical example.
-- The reverse holds when starting from Vue.
-
-Adapter-only changes are fine for things genuinely scoped to one framework (React-specific hook glue, Vue composition API ergonomics, the demo apps). When in doubt, mirror.
-
-**UI styling / colors are single-source-of-truth.** All editor chrome CSS + color tokens live in `packages/core/src/styles/editor.css`; both adapters only `@import` it (the adapter `src/styles/editor.css` files must stay thin — enforced by `bun run check:adapter-css-thin`). Never hardcode hex/rgba in components — use the `--doc-*` tokens (or shadcn token utilities like `bg-primary`). The shared Tailwind theme lives in `packages/core/tailwind-preset.cjs`, extended by all three `tailwind.config.js`. Dark mode is a token override under `.ep-root.dark` (scaffold in the core stylesheet). The document canvas (painter output) is intentionally NOT themed — it stays Word-faithful.
-
-### FlowBlock invariant — 3 switches
-
-Adding a `FlowBlock` variant in `packages/core/src/layout-engine/types.ts` requires updating all three; each ends with `assertExhaustiveFlowBlock` so `bun run typecheck` names the missing site:
+Adding a `FlowBlock` variant in `packages/core/src/layout-engine/types.ts` requires updating both; each ends with `assertExhaustiveFlowBlock` so `bun run typecheck` names the missing site:
 
 1. `runLayoutPipeline` in `packages/core/src/layout-engine/index.ts`
 2. `measureBlock` in `packages/react/src/components/DocxEditor/internals/measureBlock.ts`
-3. `measureBlock` in `packages/vue/src/composables/useDocxEditor.ts`
 
 ### Painter DOM contract
 
@@ -122,7 +123,7 @@ Stable dataset attrs on painted DOM (CSS, queries, selection map depend on these
 | Document/PM CSS              | `prosemirror/editor.css`                                        |
 | UI chrome CSS + color tokens | `packages/core/src/styles/editor.css` (SINGLE SOURCE OF TRUTH)  |
 
-Shared React/Vue orchestration lives in core (issue #696, Tier 1) — adapters re-export or delegate, so grepping an adapter lands on a thin wrapper:
+Shared orchestration lives in core — the React adapter delegates through thin wrappers, so grepping an adapter often lands in core:
 
 | Shared op                           | Core module (in `@eigenpal/docx-editor-core`) |
 | ----------------------------------- | --------------------------------------------- |
@@ -148,9 +149,9 @@ Shared React/Vue orchestration lives in core (issue #696, Tier 1) — adapters r
 
 OOXML reference: `reference/quick-ref/wordprocessingml.md`, `themes-colors.md`; schemas in `reference/ecma-376/part1/schemas/`. PDFs in `reference/ecma-376/` are gitignored — run `bun run reference:fetch` once when you need them.
 
-Website docs (docx-editor.dev/docs/1.x) are authored here in `docs/site/content/` (MDX) and synced by the site repo at build time — see `docs/site/README.md` for the authoring contract. Feature-support claims live in `docs/site/data/word-features.ts` (typed matrix), never hand-written in prose. A feature PR that changes user-visible behavior should update both in the same PR.
+Website docs (`docs/site/content/`，MDX) are kept for reference (the upstream site is offline). Feature-support claims live in `docs/site/data/word-features.ts` (typed matrix), never hand-written in prose.
 
-**Nav gotcha — two meta.json files must agree.** The sidebar/overview is driven by the `"root": true` `docs/site/content/meta.json`, which lists pages with their full path (e.g. `guides/dark-mode`). Each subfolder also has its own `meta.json` (e.g. `guides/meta.json`). Adding a new page (especially a guide) means registering it in BOTH — a page present only in the nested meta is reachable by URL but missing from the sidebar/overview. When you add an MDX file under a subfolder, add its path to the root `meta.json` too.
+**Nav gotcha — two meta.json files must agree.** The sidebar/overview is driven by the `"root": true` `docs/site/content/meta.json`, which lists pages with their full path (e.g. `guides/dark-mode`). Each subfolder also has its own `meta.json` (e.g. `guides/meta.json`). Adding a new page means registering it in BOTH — a page present only in the nested meta is reachable by URL but missing from the sidebar/overview.
 
 ---
 
@@ -178,10 +179,10 @@ Malicious-file parsing also has non-injection classes — guard these when openi
 Quick audit grep when reviewing file-handling diffs:
 
 ```bash
-grep -rnE "innerHTML|outerHTML|insertAdjacentHTML|document\.write|window\.open\(|\.href\s*=|font-family:.*\$\{" packages --include="*.ts" --include="*.tsx" --include="*.vue" | grep -viE "test|\.spec\."
+grep -rnE "innerHTML|outerHTML|insertAdjacentHTML|document\.write|window\.open\(|\.href\s*=|font-family:.*\$\{" packages --include="*.ts" --include="*.tsx" | grep -viE "test|\.spec\."
 ```
 
-Run that grep on any PR that parses or renders file data before merging. When you touch one sink, **check sibling sinks** so the same class isn't left open elsewhere — e.g. the exported `openPrintWindow` util (`core/utils/print.ts`, `PrintPreview.tsx`/`.vue`) still builds its popup via `document.write` with an unescaped `title`/`content`. Treat it as a **known sink to harden**, not a safe reference.
+Run that grep on any PR that parses or renders file data before merging. When you touch one sink, **check sibling sinks** so the same class isn't left open elsewhere — e.g. the exported `openPrintWindow` util (`core/utils/print.ts`, `PrintPreview.tsx`) still builds its popup via `document.write` with an unescaped `title`/`content`. Treat it as a **known sink to harden**, not a safe reference.
 
 ---
 
@@ -204,8 +205,6 @@ Workflow:
 
 Never hardcode user-facing English in components.
 
-Vue composables: declare named `Use<Name>Return` interface and annotate return type. Without it, core's internal types leak into the API Extractor snapshot.
-
 ---
 
 ## Public API surface
@@ -217,39 +216,15 @@ Changing a `@public` symbol → tag in TSDoc, rebuild package, `bun run api:extr
 
 `bun run docs:json` generates downstream-consumer JSON. Output is gitignored; CI runs it as a smoke test.
 
-### Parity contract
-
-`scripts/parity/parity.contract.json` enumerates which `DocxEditorProps`/`DocxEditorRef` members are paired across React/Vue. CI runs `bun run check:parity-contract`.
-
-Adding adapter prop/ref method:
-
-1. Edit adapter, `bun run api:extract`.
-2. Add to contract bucket: `paired`, `deferredInVue` (React-only), `pairedViaInheritance` (React explicit, Vue via `EditorRefLike`), or `vueExclusive`.
-3. `bun run check:parity-contract`.
-
 ---
 
-## Releasing (changesets)
+## 构建与私有分发（本 fork）
 
-Every code PR → `bun changeset` → commit `.changeset/*.md`. Skip only for test/docs/CI-only PRs.
+不发布 npm。`bun run build:packages` 按 **i18n → core → agents → react** 顺序构建四个包；主仓库 `.lawyer/editor` 经 `file:` junction + `node build.js` 打包（详见 `SELF-MAINTENANCE.md`「重建循环」）。
 
-- **Generate the changeset with `bun changeset` — never hand-write the `.changeset/*.md` file.** The interactive prompt picks the correct package name and bump and writes the right frontmatter. Hand-writing risks a wrong/typo'd package name, which crashes the post-merge Release workflow. (It's an interactive TTY command — run it in your own terminal; don't fabricate the file because the prompt is inconvenient.)
-- All published packages in fixed group — declare one bump, others follow.
-- Default bump: `patch`. `minor` for additive public API. `major` for breaks.
-- Summary lands verbatim in CHANGELOG; write for the consumer. Keep it concise (one or two lines), lead with the user-visible change (what changed, not how), and put `Fixes #N` at the end if relevant. No emojis or marketing.
-
-Release: merge the bot's `chore: release` PR. Publish runs via OIDC, tags, GH release. ~3 min.
-
-Branches: `main` = 1.x line. `0.x` = pre-rename maintenance, patch/minor only; it does NOT receive security fixes (see `SECURITY.md` — only 1.x is security-supported).
-
-Packages: `@eigenpal/docx-editor-{react,core,agents,i18n,vue}`, `@eigenpal/nuxt-docx-editor`. All published.
-
-### Don't
-
-- Hand-write `.changeset/*.md` — always `bun changeset`.
-- Push `chore: release` commit by hand.
-- Delete `.changeset/*.md` outside `changeset version`.
-- Edit `CHANGELOG.md` or `package.json#version` by hand.
+- 改 `packages/*/src` 后：先重建对应包（或 `bun run build:packages`），再到主仓库 `node build.js` 重生成 bundle。
+- `packages/*/dist` 不入库；每次合并记录 gitlink SHA。
+- 无 changesets / release workflow；不要手工改 `CHANGELOG.md` 或 `package.json#version`。
 
 ---
 
@@ -263,6 +238,6 @@ Don't: `@`-mention contributors, reference unrelated PR/issue numbers, list chan
 
 ## Bugs
 
-Issue tracker: `gh issue view <N> --repo eigenpal/docx-editor`. Dev server: `bun run dev` → `http://localhost:5173/`. Commit format: `fix: ... (fixes #N)`.
+上游 issue tracker 可作参考：`gh issue view <N> --repo eigenpal/docx-editor`。Dev server: `bun run dev` → `http://localhost:5173/`。Commit format: `fix: ... (fixes #N)`。
 
-Toolbar icons: Material Symbol SVGs, saved locally. Screenshots → `screenshots/`.
+Toolbar icons: Material Symbol SVGs, saved locally. Screenshots → `screenshots/`。

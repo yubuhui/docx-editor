@@ -1,7 +1,7 @@
 ---
-title: "React examples"
-description: "Concrete patterns for embedding <DocxEditor> in React: load from URL, controlled comments, autosave, custom toolbar, custom fonts, Yjs collaboration, agent panel."
-category: "React"
+title: 'React examples'
+description: 'Concrete patterns for embedding <DocxEditor> in React: load from URL, controlled comments, autosave, custom toolbar, custom fonts, Yjs collaboration, agent panel.'
+category: 'React'
 order: 32
 ---
 
@@ -48,11 +48,7 @@ export function FileEditor() {
 
   return (
     <>
-      <input
-        type='file'
-        accept='.docx'
-        onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-      />
+      <input type="file" accept=".docx" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
       {file && <DocxEditor documentBuffer={file} />}
     </>
   );
@@ -96,7 +92,7 @@ More on saving in [Loading and saving](/docs/1.x/guides/loading-and-saving).
 
 ## Controlled comments
 
-Own the comment array; mirror into a backing store. (React-only: the Vue adapter exposes comment events but not the `comments` prop.)
+Own the comment array; mirror into a backing store.
 
 ```tsx
 import { useState } from 'react';
@@ -130,7 +126,7 @@ export function ReviewEditor({ buf, author }: { buf: ArrayBuffer; author: string
 import { DocxEditor } from '@eigenpal/docx-editor-react';
 
 export function ReviewerEditor({ buf, reviewer }: { buf: ArrayBuffer; reviewer: string }) {
-  return <DocxEditor documentBuffer={buf} author={reviewer} mode='suggesting' />;
+  return <DocxEditor documentBuffer={buf} author={reviewer} mode="suggesting" />;
 }
 ```
 
@@ -161,19 +157,19 @@ export function CustomChromeEditor({ buf }: { buf: ArrayBuffer }) {
   }
 
   return (
-    <div className='flex flex-col h-full'>
-      <ToolbarGroup label='Formatting'>
+    <div className="flex flex-col h-full">
+      <ToolbarGroup label="Formatting">
         <ToolbarButton
           active={!!selection?.textFormatting?.bold}
           onClick={() => toggle('bold')}
-          ariaLabel='Bold'
+          ariaLabel="Bold"
         >
           B
         </ToolbarButton>
         <ToolbarButton
           active={!!selection?.textFormatting?.italic}
           onClick={() => toggle('italic')}
-          ariaLabel='Italic'
+          ariaLabel="Italic"
         >
           I
         </ToolbarButton>
@@ -231,14 +227,7 @@ The `/fonts/...` paths resolve against your site root (`public/` in Next.js or V
 import { DocxEditor } from '@eigenpal/docx-editor-react';
 
 export function Viewer({ buf }: { buf: ArrayBuffer }) {
-  return (
-    <DocxEditor
-      documentBuffer={buf}
-      readOnly
-      showToolbar={false}
-      showZoomControl={false}
-    />
-  );
+  return <DocxEditor documentBuffer={buf} readOnly showToolbar={false} showZoomControl={false} />;
 }
 ```
 

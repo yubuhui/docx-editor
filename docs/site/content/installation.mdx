@@ -1,26 +1,20 @@
 ---
 title: 'Installation'
-description: 'Install the DOCX editor in React, Next.js, Vite, Remix, Astro, Vue 3, or Nuxt. Styles import, SSR setup, and peer dependency notes.'
+description: 'Install the DOCX editor in React, Next.js, Vite, Remix, or Astro. Styles import, SSR setup, and peer dependency notes.'
 category: 'Getting Started'
 order: 2
 ---
 
-**Requirements:** React `^18 || ^19` (React adapter) or Vue `^3.3` (Vue adapter).
+**Requirements:** React `^18 || ^19`.
 
 ## Pick a package
 
-The framework adapters pull `-core` and `-i18n` in transitively, so for most
+The React adapter pulls `-core` and `-i18n` in transitively, so for most
 apps it's one install.
 
 ```bash
 # React
 npm install @eigenpal/docx-editor-react
-
-# Vue 3
-npm install @eigenpal/docx-editor-vue
-
-# Nuxt 3 & 4 (module wrapping the Vue adapter)
-npm install @eigenpal/nuxt-docx-editor
 
 # Headless / server-side (no UI)
 npm install @eigenpal/docx-editor-core
@@ -35,10 +29,6 @@ Import the component and the stylesheet once. `documentBuffer` takes a
 `File`, `Blob`, `ArrayBuffer`, or `Uint8Array` (`null` mounts an empty
 document).
 
-<Tabs items={['React', 'Vue']}>
-
-<Tab value="React">
-
 ```tsx
 import { DocxEditor } from '@eigenpal/docx-editor-react';
 import '@eigenpal/docx-editor-react/styles.css';
@@ -48,41 +38,33 @@ export default function App() {
 }
 ```
 
-</Tab>
-
-<Tab value="Vue">
-
-```vue
-<script setup lang="ts">
-import { DocxEditor } from '@eigenpal/docx-editor-vue';
-import '@eigenpal/docx-editor-vue/styles.css';
-</script>
-
-<template>
-  <DocxEditor :document-buffer="null" />
-</template>
-```
-
-</Tab>
-
-</Tabs>
-
 Without the stylesheet the editor works but the toolbar renders unstyled.
 Its styles are scoped under `.ep-root` and don't leak into your app.
 
 ## SSR frameworks
 
 The editor measures text in the DOM at mount, so it must render
-client-side. Client-rendered apps (Vite, plain Vue) need nothing special;
+client-side. Client-rendered apps (Vite) need nothing special;
 SSR frameworks need one client-only boundary. Each guide is a complete
 walkthrough backed by a runnable example:
 
 <Cards>
-  <Card href="/docs/1.x/frameworks/nextjs" title="Next.js" description="dynamic() with ssr: false; fixes 'window is not defined'." />
-  <Card href="/docs/1.x/frameworks/vite" title="Vite" description="Client-rendered React setup with no SSR boundary." />
+  <Card
+    href="/docs/1.x/frameworks/nextjs"
+    title="Next.js"
+    description="dynamic() with ssr: false; fixes 'window is not defined'."
+  />
+  <Card
+    href="/docs/1.x/frameworks/vite"
+    title="Vite"
+    description="Client-rendered React setup with no SSR boundary."
+  />
   <Card href="/docs/1.x/frameworks/remix" title="Remix" description="Mount check + React.lazy." />
-  <Card href="/docs/1.x/frameworks/astro" title="Astro" description="React island with client:only." />
-  <Card href="/docs/1.x/frameworks/nuxt" title="Nuxt" description="Official module, SSR-safe by default." />
+  <Card
+    href="/docs/1.x/frameworks/astro"
+    title="Astro"
+    description="React island with client:only."
+  />
 </Cards>
 
 ## Peer dependencies

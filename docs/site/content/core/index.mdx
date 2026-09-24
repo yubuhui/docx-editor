@@ -1,7 +1,7 @@
 ---
-title: "@eigenpal/docx-editor-core"
-description: "Framework-agnostic core: document tree, OOXML parser/serializer, ProseMirror schema, plugin contract. Underlies both the React and Vue adapters."
-category: "Packages"
+title: '@eigenpal/docx-editor-core'
+description: 'Framework-agnostic core: document tree, OOXML parser/serializer, ProseMirror schema, plugin contract. Underlies the React adapter.'
+category: 'Packages'
 order: 20
 ---
 
@@ -9,7 +9,7 @@ order: 20
 
 ## What's in it
 
-The core package contains the document tree, OOXML parser and serializer, ProseMirror schema, layout engine, and plugin contract. It has no framework dependency. The React and Vue adapters depend on it. Install `-core` directly for headless DOCX processing or custom hosts.
+The core package contains the document tree, OOXML parser and serializer, ProseMirror schema, layout engine, and plugin contract. It has no framework dependency. The React adapter depends on it. Install `-core` directly for headless DOCX processing or custom hosts.
 
 ```bash
 npm install @eigenpal/docx-editor-core
@@ -20,9 +20,9 @@ npm install @eigenpal/docx-editor-core
 - Server-side `.docx` processing: parse a buffer, walk the tree, mutate, and serialize back out.
 - Headless extraction: pull text, tables, headers/footers without rendering.
 - Custom renderer or DOM bridge against the shared schema.
-- Plugins that need to work in React, Vue, and headless contexts. Use the `core-plugins` subpath.
+- Plugins that need to work in React and headless contexts. Use the `core-plugins` subpath.
 
-If you want the editor UI in a React or Vue app, install `@eigenpal/docx-editor-react` or `@eigenpal/docx-editor-vue`. Both pull `-core` transitively.
+If you want the editor UI in a React app, install `@eigenpal/docx-editor-react`. It pulls `-core` transitively.
 
 ## In this section
 
@@ -48,7 +48,7 @@ The most common subpaths:
 - `@eigenpal/docx-editor-core/docx/parser`: `parseDocx(buffer)` → `Document` tree
 - `@eigenpal/docx-editor-core/docx/rezip`: `repackDocx` / `createDocx` → `.docx` bytes
 - `@eigenpal/docx-editor-core/types/document`: `Document`, `Paragraph`, `Run`, `Insertion`, `Deletion`, `Comment`
-- `@eigenpal/docx-editor-core/core-plugins`: plugin contract for non-React, non-Vue hosts
+- `@eigenpal/docx-editor-core/core-plugins`: plugin contract for non-React hosts
 
 All generated subpaths are in the [API reference](/docs/1.x/api/core).
 

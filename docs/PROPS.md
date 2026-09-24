@@ -1,27 +1,19 @@
 # Props & Ref Methods
 
-The documented root API shape is shared by the React and Vue packages:
+The documented root API shape:
 
 ```ts
 import { DocxEditor, type DocxEditorRef, renderAsync } from '@eigenpal/docx-editor-react';
 import '@eigenpal/docx-editor-react/styles.css';
 ```
 
-```ts
-import { DocxEditor, type DocxEditorRef, renderAsync } from '@eigenpal/docx-editor-vue';
-import '@eigenpal/docx-editor-vue/styles.css';
-```
-
-Both packages export `DocxEditor`, `DocxEditorProps`, `DocxEditorRef`,
+The package exports `DocxEditor`, `DocxEditorProps`, `DocxEditorRef`,
 `DocxEditorHandle`, `RenderAsyncOptions`, `EditorMode`, and `renderAsync`.
 Framework-specific customization stays in explicit subpaths such as `/ui`,
-`/hooks` or `/composables`, `/dialogs`, and `/plugin-api`.
+`/hooks`, `/dialogs`, and `/plugin-api`.
 
-React still exposes a few wider host-integration props, but Vue now supports the
-common document, mode, toolbar, title-bar, i18n, plugin, error, ready, save,
-zoom, scroll, print, and programmatic load flows. Staged prop divergences are
-enforced by `bun run check:editor-contract` so they stay explicit instead of
-accidental.
+It exposes the common document, mode, toolbar, title-bar, i18n, plugin, error,
+ready, save, zoom, scroll, print, and programmatic load flows.
 
 ## Props
 
@@ -68,10 +60,6 @@ accidental.
 | `onCommentsChange`            | `(comments: Comment[]) => void`             | —           | Fires whenever the comments array changes (controlled mode)                                            |
 
 Source: [`DocxEditorProps`](../packages/react/src/components/DocxEditor.tsx)
-
-Vue uses `VNodeChild` render functions for `toolbarExtra`, `renderLogo`, and
-`renderTitleBarRight`. In SFC templates, the equivalent named slots are
-`toolbar-extra`, `title-bar-left`, and `title-bar-right`.
 
 ## Ref Methods
 

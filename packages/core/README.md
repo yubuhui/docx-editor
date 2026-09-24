@@ -14,11 +14,11 @@
 
 # @eigenpal/docx-editor-core
 
-Framework-agnostic core for the [docx-editor](https://docx-editor.dev). Parses DOCX, builds the document model, runs ProseMirror, and renders Word-fidelity pages. Powers the React and Vue adapters and anything else you build on top.
+Framework-agnostic core for the [docx-editor](https://docx-editor.dev). Parses DOCX, builds the document model, runs ProseMirror, and renders Word-fidelity pages. Powers the React adapter and anything else you build on top.
 
 ## Quick Start
 
-Most users want the [React](https://www.npmjs.com/package/@eigenpal/docx-editor-react) or [Vue](https://www.npmjs.com/package/@eigenpal/docx-editor-vue) adapter. Reach for core directly when building a custom adapter, running headless on the server, or driving DOCX parsing/serialization without a UI.
+Most users want the [React](https://www.npmjs.com/package/@eigenpal/docx-editor-react) adapter. Reach for core directly when building a custom adapter, running headless on the server, or driving DOCX parsing/serialization without a UI.
 
 ```bash
 npm install @eigenpal/docx-editor-core
@@ -37,13 +37,12 @@ Each subpath tree-shakes independently. Pick the smallest entry point that gives
 
 ## Packages
 
-| Package                                                                                      | Description                                                                                                                                |
-| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| [`@eigenpal/docx-editor-react`](https://www.npmjs.com/package/@eigenpal/docx-editor-react)   | <img src="https://cdn.simpleicons.org/react/61DAFB" width="20" align="middle" /> &nbsp; React adapter. Toolbar, paged editor, plugins.     |
-| [`@eigenpal/docx-editor-vue`](https://www.npmjs.com/package/@eigenpal/docx-editor-vue)       | <img src="https://cdn.simpleicons.org/vuedotjs/4FC08D" width="20" align="middle" /> &nbsp; Vue 3 adapter. Toolbar, paged editor, plugins.  |
-| [`@eigenpal/docx-editor-core`](https://www.npmjs.com/package/@eigenpal/docx-editor-core)     | Framework-agnostic core: OOXML parser, serializer, layout engine, ProseMirror schema. Depend on this if you fork the React or Vue adapter. |
-| [`@eigenpal/docx-editor-i18n`](https://www.npmjs.com/package/@eigenpal/docx-editor-i18n)     | Shared locale strings and types consumed by both adapters.                                                                                 |
-| [`@eigenpal/docx-editor-agents`](https://www.npmjs.com/package/@eigenpal/docx-editor-agents) | Agent SDK and chat UI: framework-agnostic bridge, MCP server, AI SDK adapters, plus React UI.                                              |
+| Package                                                                                      | Description                                                                                                                            |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| [`@eigenpal/docx-editor-react`](https://www.npmjs.com/package/@eigenpal/docx-editor-react)   | <img src="https://cdn.simpleicons.org/react/61DAFB" width="20" align="middle" /> &nbsp; React adapter. Toolbar, paged editor, plugins. |
+| [`@eigenpal/docx-editor-core`](https://www.npmjs.com/package/@eigenpal/docx-editor-core)     | Framework-agnostic core: OOXML parser, serializer, layout engine, ProseMirror schema. Depend on this if you fork the React adapter.    |
+| [`@eigenpal/docx-editor-i18n`](https://www.npmjs.com/package/@eigenpal/docx-editor-i18n)     | Shared locale strings and types consumed by the React adapter.                                                                         |
+| [`@eigenpal/docx-editor-agents`](https://www.npmjs.com/package/@eigenpal/docx-editor-agents) | Agent SDK and chat UI: framework-agnostic bridge, MCP server, AI SDK adapters, plus React UI.                                          |
 
 > **Forking the adapter?** Keep your fork thin. Depend on `@eigenpal/docx-editor-core` directly so parser, serializer, and rendering fixes land in your build automatically, without backporting each upstream change by hand.
 

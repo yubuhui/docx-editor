@@ -1,4 +1,4 @@
-> 📦 Archive — not maintained. A preserved copy of Eigenpal's @eigenpal/docx-editor, captured after the project went dark in June 2026 (both the repo and docx-editor.dev went offline). Forked from sorenlouv/docx-editor — the most recent surviving fork I could find of the original. The package versions here are v1.9.0, matching the last release still published on npm (@eigenpal/docx-editor-core / -react / -agents / -i18n). Apache-2.0 licensed as per original repo. Kept read-only for archival/reference; nothing is changed here.
+> **自维护 fork（React-only）** — 基于上游 `@eigenpal/docx-editor` 1.9.0 的律师助手内嵌编辑器分支。上游项目 2026-06 停止维护、2.x 将修订/评论移入商业包；本 fork 保留 1.9.0 free core 自行维护，并已将架构裁剪为 React-only（Vue/Nuxt 包与 parity/发布工具链移除；`packages/agents` 内的 Vue UI 保留）。构建链、双仓提交与红线见 [SELF-MAINTENANCE.md](SELF-MAINTENANCE.md)。Apache-2.0。
 
 ---
 
@@ -16,7 +16,7 @@
   <a href="https://www.docx-editor.dev/docs"><img src="https://img.shields.io/badge/Docs-3B5BDB?style=flat-square&logo=readthedocs&logoColor=white" alt="Documentation" /></a>
 </p>
 
-Open-source WYSIWYG `.docx` editor for React and Vue with canonical OOXML, tracked changes, and real-time collaboration. Agent-ready. **[Live demo](https://docx-editor.dev/editor)** | **[Documentation](https://www.docx-editor.dev/docs)**
+Open-source WYSIWYG `.docx` editor for React with canonical OOXML, tracked changes, and real-time collaboration. Agent-ready. **[Documentation](https://www.docx-editor.dev/docs)**
 
 ## Quick Start
 
@@ -26,18 +26,6 @@ npm install @eigenpal/docx-editor-react
 
 See the [React quick start](#react) below.
 
-```bash
-npm install @eigenpal/docx-editor-vue
-```
-
-See the [Vue quick start](#vue) below.
-
-```bash
-npm install @eigenpal/nuxt-docx-editor
-```
-
-See the [Nuxt quick start](#nuxt) below.
-
 <p align="center">
   <a href="https://docx-editor.dev/editor">
     <img src="./.github/assets/editor.png" alt="docx-editor screenshot" width="100%" />
@@ -46,14 +34,12 @@ See the [Nuxt quick start](#nuxt) below.
 
 ## Packages
 
-| Package                                                                                      | Description                                                                                                                                | Docs                                                  |
-| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------- |
-| [`@eigenpal/docx-editor-react`](https://www.npmjs.com/package/@eigenpal/docx-editor-react)   | <img src="https://cdn.simpleicons.org/react/61DAFB" width="20" align="middle" /> &nbsp; React adapter. Toolbar, paged editor, plugins.     | [Docs](https://www.docx-editor.dev/docs/1.x/react)    |
-| [`@eigenpal/docx-editor-vue`](https://www.npmjs.com/package/@eigenpal/docx-editor-vue)       | <img src="https://cdn.simpleicons.org/vuedotjs/4FC08D" width="20" align="middle" /> &nbsp; Vue 3 adapter. Toolbar, paged editor, plugins.  | [Docs](https://www.docx-editor.dev/docs/1.x/vue)      |
-| [`@eigenpal/nuxt-docx-editor`](https://www.npmjs.com/package/@eigenpal/nuxt-docx-editor)     | <img src="https://cdn.simpleicons.org/nuxt/00DC82" width="20" align="middle" /> &nbsp; Nuxt 3 & 4 module wrapping the Vue adapter.         | [Docs](https://www.docx-editor.dev/docs/1.x/vue/nuxt) |
-| [`@eigenpal/docx-editor-core`](https://www.npmjs.com/package/@eigenpal/docx-editor-core)     | Framework-agnostic core: OOXML parser, serializer, layout engine, ProseMirror schema. Depend on this if you fork the React or Vue adapter. | [Docs](https://www.docx-editor.dev/docs/1.x/core)     |
-| [`@eigenpal/docx-editor-i18n`](https://www.npmjs.com/package/@eigenpal/docx-editor-i18n)     | Shared locale strings and types consumed by both adapters.                                                                                 | [Docs](https://www.docx-editor.dev/docs/1.x/i18n)     |
-| [`@eigenpal/docx-editor-agents`](https://www.npmjs.com/package/@eigenpal/docx-editor-agents) | Agent SDK and chat UI: framework-agnostic bridge, MCP server, AI SDK adapters, plus UI components.                                         | [Docs](https://www.docx-editor.dev/docs/1.x/agents)   |
+| Package                                                                                      | Description                                                                                                                            | Docs                                                |
+| -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| [`@eigenpal/docx-editor-react`](https://www.npmjs.com/package/@eigenpal/docx-editor-react)   | <img src="https://cdn.simpleicons.org/react/61DAFB" width="20" align="middle" /> &nbsp; React adapter. Toolbar, paged editor, plugins. | [Docs](https://www.docx-editor.dev/docs/1.x/react)  |
+| [`@eigenpal/docx-editor-core`](https://www.npmjs.com/package/@eigenpal/docx-editor-core)     | Framework-agnostic core: OOXML parser, serializer, layout engine, ProseMirror schema. Depend on this if you fork the React adapter.    | [Docs](https://www.docx-editor.dev/docs/1.x/core)   |
+| [`@eigenpal/docx-editor-i18n`](https://www.npmjs.com/package/@eigenpal/docx-editor-i18n)     | Shared locale strings and types consumed by the React adapter.                                                                         | [Docs](https://www.docx-editor.dev/docs/1.x/i18n)   |
+| [`@eigenpal/docx-editor-agents`](https://www.npmjs.com/package/@eigenpal/docx-editor-agents) | Agent SDK and chat UI: framework-agnostic bridge, MCP server, AI SDK adapters, plus UI components.                                     | [Docs](https://www.docx-editor.dev/docs/1.x/agents) |
 
 > **Forking the adapter?** Keep your fork thin. Depend on `@eigenpal/docx-editor-core` directly so parser, serializer, and rendering fixes land in your build automatically, without backporting each upstream change by hand.
 
@@ -84,43 +70,6 @@ export function App() {
 
 Full docs: [`packages/react`](packages/react) · [API reference](https://www.docx-editor.dev/docs/props).
 
-## Vue
-
-```vue
-<script setup lang="ts">
-import { ref } from 'vue';
-import { DocxEditor } from '@eigenpal/docx-editor-vue';
-import '@eigenpal/docx-editor-vue/styles.css';
-
-const buffer = ref<ArrayBuffer | null>(null);
-
-async function loadFile(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0];
-  buffer.value = file ? await file.arrayBuffer() : null;
-}
-</script>
-
-<template>
-  <input type="file" accept=".docx" @change="loadFile" />
-  <DocxEditor v-if="buffer" :document-buffer="buffer" mode="editing" />
-</template>
-```
-
-Full docs: [`packages/vue`](packages/vue) · [API reference](https://www.docx-editor.dev/docs/props).
-
-## Nuxt
-
-```ts
-// nuxt.config.ts
-export default defineNuxtConfig({
-  modules: ['@eigenpal/nuxt-docx-editor'],
-});
-```
-
-`@eigenpal/nuxt-docx-editor` wraps the Vue adapter as a Nuxt 3 & 4 module: it auto-imports an SSR-safe `<DocxEditor>` component (no manual import, no `<ClientOnly>` wrapper) and the Vue composables.
-
-Full docs: [`packages/nuxt`](packages/nuxt).
-
 ## Plugins
 
 ```tsx
@@ -143,9 +92,9 @@ bun run build
 bun run typecheck
 ```
 
-A live preview of `main` is auto-deployed at **[latest.docx-editor.dev](https://latest.docx-editor.dev/)** — useful for trying out changes before they ship to npm.
+本 fork 的重建与双仓提交流程见 [SELF-MAINTENANCE.md](SELF-MAINTENANCE.md)。
 
-Examples: [Vite](examples/vite) | [Next.js](examples/nextjs) | [Remix](examples/remix) | [Astro](examples/astro) | [Vue](examples/vue) | [Nuxt](examples/nuxt)
+Examples: [Vite](examples/vite) | [Next.js](examples/nextjs) | [Remix](examples/remix) | [Astro](examples/astro)
 
 **[Documentation](https://www.docx-editor.dev/docs)** | **[Props & Ref Methods](https://www.docx-editor.dev/docs/props)** | **[Plugins](https://www.docx-editor.dev/docs/plugins)** | **[Architecture](https://www.docx-editor.dev/docs/architecture)**
 
@@ -173,8 +122,3 @@ Help translate the editor into your language! See the full **[i18n contribution 
 bun run i18n:new de      # scaffold German locale
 bun run i18n:status      # check translation coverage
 ```
-
-## Commercial Support
-
-> [!TIP]
-> Questions or custom features? Email **[docx-editor@eigenpal.com](mailto:docx-editor@eigenpal.com)**.

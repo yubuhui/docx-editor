@@ -50,8 +50,15 @@ npm install   # 重建 @eigenpal/* 的 file: junction
    - 主仓库：提交 bundles + gitlink SHA 提升（git add .lawyer/docx-editor-src 记录新 SHA）
 ```
 
-> 不要用 root `bun run build:packages`（会连 vue/nuxt 一起建，慢且可能因缺依赖失败）。
+> `bun run build:packages` 就是四包顺序（i18n → core → agents → react），可直接使用。
 > 纯 host 改动（`docx-editor-host.jsx`/`editor-router.jsx`/`editor.css`）只需 `node build.js`，无需重建 fork 包。
+
+## React-only 边界（2026-09 架构裁剪）
+
+- 已删除：`packages/{vue,nuxt}`、`examples/{vue,nuxt,parity}`、`e2e/tests/{vue,nuxt,parity}`、React/Vue parity 校验脚本、changesets/release 发布链（`.changeset/`、`release.yml`、`vercel.json`、`RELEASING.md`）。
+- 保留：`packages/agents/src/vue/**`（agents 包 Vue UI，仍参与构建/类型检查/lint）。
+- Playwright 仅 chromium + React dev server；一律 `bunx playwright`（`npx` 会逃逸到父项目 Playwright 造成双实例报错）。
+- editor chrome 样式/颜色 token 仍只在 `packages/core/src/styles/editor.css` 单一来源；`check:parity` = `check:public-docs-surface && check:adapter-css-thin`。
 
 ## 分支与提交规范
 
@@ -73,5 +80,6 @@ npm install   # 重建 @eigenpal/* 的 file: junction
 ## 测试
 
 - 定向单测：`bun test packages/core/src/<相关目录>/__tests__/<用例>.test.ts`
-- 全量 e2e（500+）只在最终验证时跑，日常用定向 spec：
-  `npx playwright test --grep "<pattern>" --timeout=30000 --workers=4`
+- 全量 e2e（约 460 条）只在最终验证时跑，日常用定向 spec：
+  `bunx playwright test --grep "<pattern>" --timeout=30000 --workers=4`
+- 首次需装浏览器：`bunx playwright install --only-shell chromium`（慢网络可先设 `PLAYWRIGHT_DOWNLOAD_HOST=https://cdn.npmmirror.com/binaries/playwright`）。

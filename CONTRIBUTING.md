@@ -2,7 +2,7 @@
 
 > **fork 化说明**：本仓库是律师助手项目的自维护 fork（remote `chitwitgit/docx-editor`），不再向上游 eigenpal 提 PR。
 > 提交规范见 `SELF-MAINTENANCE.md`（重建循环/分支策略/自维护红线），本文件其余部分保留上游工程约定（typecheck/测试/API 门禁）。
-> 改动需过 pre-commit 门禁（typecheck + parity + api:check + lint-staged），文档类改动可 `--no-verify` 提交。
+> 改动需过 pre-commit 门禁（typecheck + UI gates + api:check + lint-staged），文档类改动可 `--no-verify` 提交。
 
 Thanks for your interest in contributing! This guide will help you get started.
 
@@ -15,7 +15,7 @@ Thanks for your interest in contributing! This guide will help you get started.
 
 ```bash
 # Clone the repo
-git clone https://github.com/eigenpal/docx-editor.git
+git clone git@github.com:chitwitgit/docx-editor.git
 cd docx-editor
 
 # Install dependencies
@@ -38,11 +38,11 @@ bun run typecheck
 bun test
 
 # E2E tests (requires Playwright browsers)
-npx playwright install --with-deps chromium
-npx playwright test --timeout=30000 --workers=4
+bunx playwright install --only-shell chromium
+bunx playwright test --timeout=30000 --workers=4
 
 # Single test file
-npx playwright test e2e/tests/formatting.spec.ts --timeout=30000
+bunx playwright test e2e/tests/formatting.spec.ts --timeout=30000
 ```
 
 ## Code Style
@@ -78,7 +78,7 @@ The editor has two rendering systems:
 - **Hidden ProseMirror** — the real editing state (selection, undo/redo, keyboard input)
 - **Visible Pages** (layout-painter) — what the user sees, rebuilt from PM state on every change
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full architecture and [CLAUDE.md](CLAUDE.md) for the agent-facing quick reference (also useful for humans).
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full architecture and [AGENTS.md](AGENTS.md) for the agent-facing quick reference (also useful for humans).
 
 ## Public API Surface
 
@@ -92,11 +92,7 @@ bun run api:extract
 git add docs/api/<pkg-slug>/
 ```
 
-The CI error message points at the source file for each drifted entry, so the fix is mechanical. Full details live in [CLAUDE.md](CLAUDE.md) under "Public API surface".
-
-**Adding a `DocxEditorProps` field or `DocxEditorRef` method to either adapter** also requires updating `scripts/parity/parity.contract.json` — the cross-adapter parity contract that tracks which fields are shared, deliberately Vue-deferred, or Vue-exclusive. `bun run check:parity-contract` (also run in CI) fails until the contract acknowledges the new symbol. The error message names the symbol and tells you which bucket to add it to.
-
-**Adding a new Vue composable**: declare a `Use<Name>Return` interface and annotate the function's return type with it. Without the annotation the snapshot recursively inlines core's internal types into Vue's public surface.
+The CI error message points at the source file for each drifted entry, so the fix is mechanical. Full details live in [AGENTS.md](AGENTS.md) under "Public API surface".
 
 **Adding a new published package**: edit `scripts/lib/packages.mjs` (one entry — name, root, slug, tsconfig, build hint). Add matching `api:extract` / `api:check` scripts in the new package's `package.json` delegating to `../../scripts/api-extractor.mjs --package <name>`. Then run `bun run api:extract && bun run docs:json` to generate snapshots.
 
@@ -104,13 +100,13 @@ The CI error message points at the source file for each drifted entry, so the fi
 
 The same `@public` surface is also emitted as structured JSON for downstream docs sites: `bun run docs:json` writes `docs/json/<pkg-slug>/<subpath>.json` per published subpath, plus a root `docs/json/index.json`. **The JSON is gitignored** — downstream sites (e.g. `docx-editor-page`) clone the repo and run the script themselves. CI runs `bun run docs:json` as a smoke test so generator breakage surfaces in this repo, not in the consumer's build.
 
-## Adapter Parity
+## Shared logic lives in core
 
-The editor ships first-party adapters for React (`packages/react`) and Vue (`packages/vue`). Both share `@eigenpal/docx-editor-core`, which owns the parser, ProseMirror schema, layout engine, layout bridge (page mapping, footnote convergence, header/footer measurement), and serializer. Adapters only own their framework-specific shell, components, and lifecycle wiring.
+The editor ships a React adapter (`packages/react`) on top of `@eigenpal/docx-editor-core`, which owns the parser, ProseMirror schema, layout engine, layout bridge (page mapping, footnote convergence, header/footer measurement), and serializer. The adapter only owns its React shell, components, and lifecycle wiring.
 
-**When you touch layout, parsing, or rendering logic, put it in core, not in an adapter.** If you copy a 30-line helper from React to Vue, you've created a divergence trap. The footnote convergence loop (`stabilizeFootnoteLayout` in `packages/core/src/layout-bridge/footnoteLayout.ts`) is the canonical example: one helper, both adapters call it.
+**When you touch layout, parsing, or rendering logic, put it in core, not in the adapter.** The footnote convergence loop (`stabilizeFootnoteLayout` in `packages/core/src/layout-bridge/footnoteLayout.ts`) is the canonical example. A helper copied into an adapter is a divergence trap — and it can't be unit-tested from core.
 
-Parity smoke tests live under `e2e/tests/parity/smoke/` and run each spec against both demos. Add one when you fix a bug that could plausibly affect rendering on either side.
+Editor chrome styling/colors have a single source: `packages/core/src/styles/editor.css`. The adapter's `src/styles/editor.css` must stay import-only; `bun run check:parity` enforces this.
 
 ## Reporting Bugs
 
@@ -122,4 +118,4 @@ Open an issue at [github.com/eigenpal/docx-editor/issues](https://github.com/eig
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the [MIT License](LICENSE).
+By contributing, you agree that your contributions will be licensed under the [Apache 2.0 License](LICENSE).

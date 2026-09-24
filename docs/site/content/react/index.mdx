@@ -1,7 +1,7 @@
 ---
-title: "@eigenpal/docx-editor-react"
-description: "React adapter: <DocxEditor>, hooks, dialogs, toolbar, plugin host. Works with Next.js, Vite, Remix, Astro."
-category: "Packages"
+title: '@eigenpal/docx-editor-react'
+description: 'React adapter: <DocxEditor>, hooks, dialogs, toolbar, plugin host. Works with Next.js, Vite, Remix, Astro.'
+category: 'Packages'
 order: 30
 ---
 
@@ -61,7 +61,7 @@ editorRef.current?.scrollToParaId('DEF45600');
 
 `paraId` is Word's `w14:paraId` attribute. It survives concurrent edits and round-trips through OOXML, which is why we use it instead of positional addressing. Every method signature is in the [API reference](/docs/1.x/api/react).
 
-The ref also reaches block-level content controls in the live document: `getContentControls` lists them (filtered by tag, alias, id, or type), `scrollToContentControl` brings one into view, and `setContentControlContent` / `setContentControlValue` / `removeContentControl` edit one by tag as normal undoable edits. Locked controls are refused unless forced. The Vue adapter pairs the same methods.
+The ref also reaches block-level content controls in the live document: `getContentControls` lists them (filtered by tag, alias, id, or type), `scrollToContentControl` brings one into view, and `setContentControlContent` / `setContentControlValue` / `removeContentControl` edit one by tag as normal undoable edits. Locked controls are refused unless forced.
 
 ## Toolbar
 

@@ -8,7 +8,7 @@
  * baseline in `e2e/perf-baselines/`.
  *
  * Run a perf suite with emission locally:
- *   PERF_EMIT_JSON=1 npx playwright test \
+ *   PERF_EMIT_JSON=1 bunx playwright test \
  *     e2e/tests/performance-large-docs-comments-suggestions.spec.ts \
  *     --project=chromium --workers=1 --timeout=120000
  */

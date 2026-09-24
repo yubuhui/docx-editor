@@ -17,7 +17,6 @@ on keystroke→repaint latency.
 - [x] Reproduced with a deterministic fixture + e2e test
 - [x] Root cause identified
 - [x] Fix landed (React + core)
-- [x] Vue checked — not affected (uses DOM-rect anchoring, not the layout walk)
 - [x] Tests green
 
 ## Reproduction
@@ -41,7 +40,7 @@ Test: [`e2e/tests/performance-large-docs-comments-suggestions.spec.ts`](e2e/test
 (mirrors `performance-large-docs.spec.ts` + one comment-adjacent typing test).
 
 ```bash
-npx playwright test e2e/tests/performance-large-docs-comments-suggestions.spec.ts --timeout=120000 --workers=1
+bunx playwright test e2e/tests/performance-large-docs-comments-suggestions.spec.ts --timeout=120000 --workers=1
 ```
 
 ## Measured latency
@@ -117,17 +116,9 @@ a monotonic page hint through the scan:
 This turns the pass from O(anchors × pages) into O(anchors + pages):
 `computeAnchorPositions` dropped from ~1500ms to ~40ms with 423 anchors.
 
-Vue is unaffected: its sidebar reads anchor positions straight from painted DOM
-rects (`querySelectorAll('[data-comment-id]')` in `CommentMarginMarkers.vue`),
-not the layout-engine walk — so there is no React→Vue mirror to do here.
-
 ## Possible follow-ups (not blocking)
 
 - `computeAnchorPositions` still runs on every full layout pass; could be skipped
   when neither the doc nor the layout changed shape.
 - Confirm the load-path improvement (7159ms → 3018ms) is also from this fix —
   the same anchor pass runs during initial settling.
-
-## Notes
-
-- Changeset: `.changeset/large-doc-comment-anchor-perf.md`.

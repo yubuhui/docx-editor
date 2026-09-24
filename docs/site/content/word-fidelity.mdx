@@ -11,7 +11,7 @@ seoTitle: 'Word feature support and fidelity'
 
 - **Browser editor use is client-side.** Parsing, rendering, editing, and serialization run in the browser for normal `<DocxEditor>` usage. Headless core, `DocxReviewer`, and MCP run wherever you host them.
 - **`.docx` in, `.docx` out.** The editor reads OOXML and writes OOXML. Parts of the file it does not edit are carried over from the original archive unchanged.
-- **Apache 2.0**, all published packages. **SemVer**, with the public API tracked by generated snapshots in CI. React and Vue parity is a machine-checked contract.
+- **Apache 2.0**, all published packages. **SemVer**, with the public API tracked by generated snapshots in CI.
 - **Commercial support**: [docx-editor@eigenpal.com](mailto:docx-editor@eigenpal.com).
 
 ## Feature matrix
@@ -143,9 +143,8 @@ No published benchmarks; test with your own documents in the
 ## Stability, license and support
 
 - **Apache 2.0**, all packages. Contributions need a one-time [CLA](https://github.com/eigenpal/docx-editor/blob/main/CLA.md).
-- **SemVer** via changesets; all packages share one version number.
+- **SemVer**; all packages share one version number.
 - The public API is tracked by [API Extractor snapshots](https://github.com/eigenpal/docx-editor/tree/main/docs/api); CI fails on drift.
-- React/Vue parity is a checked contract; `agentPanel` and controlled `comments` are still React-only.
 - `layout-engine`, `layout-painter`, `layout-bridge` and `plugin-api` are `@experimental`.
 - Some advanced fidelity features may move to a commercial plan later; everything published stays Apache 2.0.
 

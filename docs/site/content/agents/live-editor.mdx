@@ -77,7 +77,7 @@ const bridge = createEditorBridge(editorHandle satisfies EditorRefLike, 'Assista
 const result = executeToolCall('find_text', { query: 'liability' }, bridge);
 ```
 
-`EditorRefLike` is the structural contract both adapters' `DocxEditorRef` satisfy: `addComment`, `proposeChange`, `findInDocument`, `getSelectionInfo`, `applyFormatting`, `setParagraphStyle`, `scrollToParaId`, `getPageContent`, and friends. Anything implementing it can host the toolkit. The resulting `EditorBridge` also satisfies the compile-time [Word JS API parity contract](/docs/1.x/agents/word-js-api).
+`EditorRefLike` is the structural contract the editor's `DocxEditorRef` satisfies: `addComment`, `proposeChange`, `findInDocument`, `getSelectionInfo`, `applyFormatting`, `setParagraphStyle`, `scrollToParaId`, `getPageContent`, and friends. Anything implementing it can host the toolkit. The resulting `EditorBridge` also satisfies the compile-time [Word JS API parity contract](/docs/1.x/agents/word-js-api).
 
 ## The agentPanel prop (React)
 
@@ -104,19 +104,19 @@ const result = executeToolCall('find_text', { query: 'liability' }, bridge);
 />
 ```
 
-The panel shell is configurable through these options; render your own chat UI inside `render`. In Vue the `agentPanel` prop does not exist yet (React-only per the parity contract); mount the `AgentPanel` component from `@eigenpal/docx-editor-agents/vue` next to the editor instead.
+The panel shell is configurable through these options; render your own chat UI inside `render`. In Vue, mount the `AgentPanel` component from `@eigenpal/docx-editor-agents/vue` next to the editor instead.
 
 ## Chat UI components
 
 Optional components for the inside of the panel. React: `@eigenpal/docx-editor-agents/react`. Vue: `@eigenpal/docx-editor-agents/vue`.
 
-| Component             | Purpose                                                                                                                                                                                    |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `AgentChatLog`        | Message list with streaming text and a collapsible tool-call timeline. Props: `messages: AgentMessage[]`, `loading`, `error`, `humanizeToolName` (pass `getToolDisplayName`), `emptyState` |
+| Component             | Purpose                                                                                                                                                                                                  |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AgentChatLog`        | Message list with streaming text and a collapsible tool-call timeline. Props: `messages: AgentMessage[]`, `loading`, `error`, `humanizeToolName` (pass `getToolDisplayName`), `emptyState`               |
 | `AgentComposer`       | Input row. React props: `value`, `onChange`, `onSubmit`, `disabled`, `placeholder`, `footnote`. The Vue component uses `modelValue` (`v-model`) instead of `value`/`onChange` and has no `footnote` prop |
-| `AgentTimeline`       | Standalone tool-call list (running spinner, done check), used internally by the chat log                                                                                                   |
-| `AgentSuggestionChip` | Prompt-suggestion chip for empty states                                                                                                                                                    |
-| `AgentPanel`          | The panel shell itself, for hosts not using the `agentPanel` prop                                                                                                                          |
+| `AgentTimeline`       | Standalone tool-call list (running spinner, done check), used internally by the chat log                                                                                                                 |
+| `AgentSuggestionChip` | Prompt-suggestion chip for empty states                                                                                                                                                                  |
+| `AgentPanel`          | The panel shell itself, for hosts not using the `agentPanel` prop                                                                                                                                        |
 
 If you drive the chat with the Vercel AI SDK, `toAgentMessages(chat.messages, chat.status)` from `@eigenpal/docx-editor-agents/ai-sdk/react` (or `/ai-sdk/vue`) converts `useChat`'s `UIMessage[]` into the `AgentMessage[]` shape these components render. You can also render components from another chat UI library or your own design system.
 
