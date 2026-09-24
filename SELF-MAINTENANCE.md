@@ -12,7 +12,7 @@
 
 ```powershell
 # 从主仓库根目录执行
-git clone git@github.com:chitwitgit/docx-editor.git .lawyer/docx-editor-src
+git clone git@github.com:yubuhui/docx-editor.git .lawyer/docx-editor-src
 # checkout 到主仓库记录的 SHA（git ls-files -s .lawyer/docx-editor-src 的第三个字段）
 git -C .lawyer/docx-editor-src checkout <主仓库记录的SHA>
 ```

@@ -1,6 +1,6 @@
 # Contributing to @eigenpal/docx-editor-react
 
-> **fork 化说明**：本仓库是律师助手项目的自维护 fork（remote `chitwitgit/docx-editor`），不再向上游 eigenpal 提 PR。
+> **fork 化说明**：本仓库是律师助手项目的自维护 fork（origin `yubuhui/docx-editor`，源自 `chitwitgit/docx-editor`），不再向上游 eigenpal 提 PR。
 > 提交规范见 `SELF-MAINTENANCE.md`（重建循环/分支策略/自维护红线），本文件其余部分保留上游工程约定（typecheck/测试/API 门禁）。
 > 改动需过 pre-commit 门禁（typecheck + UI gates + api:check + lint-staged），文档类改动可 `--no-verify` 提交。
 
@@ -15,7 +15,7 @@ Thanks for your interest in contributing! This guide will help you get started.
 
 ```bash
 # Clone the repo
-git clone git@github.com:chitwitgit/docx-editor.git
+git clone git@github.com:yubuhui/docx-editor.git
 cd docx-editor
 
 # Install dependencies
