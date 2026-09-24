@@ -15,16 +15,13 @@ import {
   insertImageNode,
 } from '@eigenpal/docx-editor-core/prosemirror/commands';
 import { loadFont } from '@eigenpal/docx-editor-core/utils';
+import { zhCN } from '@eigenpal/docx-editor-i18n';
 import { DocxEditor, type DocxEditorRef } from '@eigenpal/docx-editor-react';
 import {
   AgentChatLog,
   type AgentMessage,
   getToolDisplayName,
 } from '@eigenpal/docx-editor-agents/react';
-import { ExampleSwitcher } from '../../shared/ExampleSwitcher';
-import { AdapterSwitcher } from '../../shared/AdapterSwitcher';
-import { BrandLogo } from '../../shared/BrandLogo';
-
 function extractDocumentText(value: unknown): string {
   if (!value || typeof value !== 'object') return '';
   const maybeText = (value as { text?: unknown }).text;
@@ -93,6 +90,23 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '4px 8px',
     background: 'var(--doc-bg-subtle)',
     borderRadius: '4px',
+  },
+  langSwitch: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 2,
+    padding: 2,
+    borderRadius: 9999,
+    border: '1px solid var(--doc-border)',
+    background: 'var(--doc-bg-subtle)',
+  },
+  langButton: {
+    border: 'none',
+    borderRadius: 9999,
+    padding: '4px 10px',
+    cursor: 'pointer',
+    fontSize: '13px',
+    transition: 'background 0.15s, color 0.15s',
   },
 };
 
@@ -224,6 +238,17 @@ export function App() {
   const [fileName, setFileName] = useState<string>('docx-editor-demo.docx');
   const [status, setStatus] = useState<string>('');
   const [colorMode, setColorMode] = useState<'light' | 'dark'>('light');
+  // Demo locale switch: `?lang=zh` (or zh-CN) boots the Chinese UI. zhCN is a
+  // community partial — missing/null keys fall back to English via the
+  // LocaleProvider deepMerge, so adding translations to zh-CN.json shows up
+  // here live (vite resolves the i18n package to source).
+  const [lang, setLang] = useState<'en' | 'zh'>(() => {
+    if (typeof window === 'undefined') return 'en';
+    const q = new URLSearchParams(window.location.search).get('lang') ?? '';
+    return q.toLowerCase().startsWith('zh') ? 'zh' : 'en';
+  });
+  // Demo-chrome strings (the editor UI itself is localized by the i18n prop).
+  const L = useCallback((zh: string, en: string) => (lang === 'zh' ? zh : en), [lang]);
   const disableFindReplaceShortcuts = useMemo(
     () => new URLSearchParams(window.location.search).get('disableFindReplaceShortcuts') === '1',
     []
@@ -712,12 +737,12 @@ export function App() {
       setFileName('Untitled.docx');
       return;
     }
-    fetch(`${import.meta.env.BASE_URL}docx-editor-demo.docx`)
+    fetch(`${import.meta.env.BASE_URL}chinese-legal-sample.docx`)
       .then((res) => res.arrayBuffer())
       .then((buffer) => {
         if (userStartedOwnDocRef.current) return; // user already moved on
         setDocumentBuffer(buffer);
-        setFileName('docx-editor-demo.docx');
+        setFileName('民事起诉状-示例.docx');
       })
       .catch(() => {
         if (userStartedOwnDocRef.current) return;
@@ -739,29 +764,55 @@ export function App() {
     setDocVersion((v) => v + 1);
   }, []);
 
-  const handleFileSelect = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handleFileSelect = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      if (!file) return;
 
-    try {
-      userStartedOwnDocRef.current = true;
-      setStatus('Loading...');
-      const buffer = await file.arrayBuffer();
-      setCurrentDocument(null);
-      setDocumentBuffer(buffer);
-      setFileName(file.name);
-      setStatus('');
-      setDocVersion((v) => v + 1);
-    } catch {
-      setStatus('Error loading file');
-    }
-  }, []);
+      try {
+        userStartedOwnDocRef.current = true;
+        setStatus(L('加载中…', 'Loading...'));
+        const buffer = await file.arrayBuffer();
+        setCurrentDocument(null);
+        setDocumentBuffer(buffer);
+        setFileName(file.name);
+        setStatus('');
+        setDocVersion((v) => v + 1);
+      } catch {
+        setStatus(L('文件加载失败', 'Error loading file'));
+      }
+    },
+    [L]
+  );
+
+  // Load a bundled demo document: the Chinese legal sample (firstLineChars
+  // indent, eastAsia fonts, table, footer page field) or the upstream feature
+  // showcase (tracked changes / comments).
+  const loadBundledDocument = useCallback(
+    async (fileName: string, displayName?: string) => {
+      try {
+        userStartedOwnDocRef.current = true;
+        setStatus(L('加载中…', 'Loading...'));
+        const res = await fetch(`${import.meta.env.BASE_URL}${fileName}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const buffer = await res.arrayBuffer();
+        setCurrentDocument(null);
+        setDocumentBuffer(buffer);
+        setFileName(displayName ?? fileName);
+        setStatus('');
+        setDocVersion((v) => v + 1);
+      } catch {
+        setStatus(L('文件加载失败', 'Error loading file'));
+      }
+    },
+    [L]
+  );
 
   const handleSave = useCallback(async () => {
     if (!editorRef.current) return;
 
     try {
-      setStatus('Saving...');
+      setStatus(L('保存中…', 'Saving...'));
       const buffer = await editorRef.current.save();
       if (buffer) {
         const blob = new Blob([buffer], {
@@ -775,25 +826,31 @@ export function App() {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        setStatus('Saved!');
+        setStatus(L('已保存', 'Saved!'));
         setTimeout(() => setStatus(''), 2000);
       }
     } catch {
-      setStatus('Save failed');
+      setStatus(L('保存失败', 'Save failed'));
     }
-  }, [fileName]);
+  }, [fileName, L]);
 
-  const handleError = useCallback((error: Error) => {
-    console.error('Editor error:', error);
-    setStatus(`Error: ${error.message}`);
-  }, []);
+  const handleError = useCallback(
+    (error: Error) => {
+      console.error('Editor error:', error);
+      setStatus(`${L('错误', 'Error')}: ${error.message}`);
+    },
+    [L]
+  );
 
   const renderLogo = useCallback(
     () => (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <BrandLogo />
-        <AdapterSwitcher current="react" />
-        <ExampleSwitcher current="Vite" />
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
+        <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--doc-text)' }}>
+          文档编辑器演示
+        </span>
+        <span style={{ fontSize: '11px', color: 'var(--doc-text-muted)' }}>
+          引擎 eigenpal/docx-editor · Apache-2.0
+        </span>
       </div>
     ),
     []
@@ -803,6 +860,44 @@ export function App() {
     () => (
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         <ThemeToggle value={colorMode} onChange={setColorMode} />
+        <div style={styles.langSwitch} role="radiogroup" aria-label="Language">
+          {(['en', 'zh'] as const).map((l) => {
+            const selected = lang === l;
+            return (
+              <button
+                key={l}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                data-testid={`demo-lang-${l}`}
+                title={l === 'en' ? 'English UI' : '中文界面'}
+                onClick={() => setLang(l)}
+                style={{
+                  ...styles.langButton,
+                  background: selected ? 'var(--doc-surface)' : 'transparent',
+                  color: selected ? 'var(--doc-text)' : 'var(--doc-text-subtle)',
+                  fontWeight: selected ? 600 : 500,
+                }}
+              >
+                {l === 'en' ? 'EN' : '中文'}
+              </button>
+            );
+          })}
+        </div>
+        <button
+          style={styles.button}
+          data-testid="demo-chinese-sample"
+          onClick={() => loadBundledDocument('chinese-legal-sample.docx', '民事起诉状-示例.docx')}
+        >
+          中文示例
+        </button>
+        <button
+          style={styles.button}
+          data-testid="demo-feature-sample"
+          onClick={() => loadBundledDocument('docx-editor-demo.docx', 'docx-editor-demo.docx')}
+        >
+          {L('功能示例', 'Feature Demo')}
+        </button>
         <label style={styles.fileInputLabel} onMouseDown={(e) => e.stopPropagation()}>
           <input
             type="file"
@@ -810,18 +905,27 @@ export function App() {
             onChange={handleFileSelect}
             style={{ display: 'none' }}
           />
-          Open DOCX
+          {L('打开文档', 'Open DOCX')}
         </label>
         <button style={styles.newButton} onClick={handleNewDocument}>
-          New
+          {L('新建', 'New')}
         </button>
         <button style={styles.button} onClick={handleSave}>
-          Save
+          {L('保存', 'Save')}
         </button>
         {status && <span style={styles.status}>{status}</span>}
       </div>
     ),
-    [handleFileSelect, handleNewDocument, handleSave, status, colorMode]
+    [
+      handleFileSelect,
+      loadBundledDocument,
+      handleNewDocument,
+      handleSave,
+      status,
+      colorMode,
+      lang,
+      L,
+    ]
   );
 
   // Opt-in agent panel for E2E + manual smoke testing. Adds the right-hand
@@ -896,6 +1000,8 @@ export function App() {
           documentBuffer={documentBuffer}
           author={randomAuthor}
           colorMode={colorMode}
+          i18n={lang === 'zh' ? zhCN : undefined}
+          rulerUnit="cm"
           onError={handleError}
           showToolbar={true}
           showRuler={!isMobile}

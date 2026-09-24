@@ -7,11 +7,20 @@ import path from 'path';
 const monorepoRoot = path.resolve(__dirname, '../..');
 
 async function fetchGitHubStars(): Promise<number | null> {
+  // Never let an unreachable GitHub delay dev-server startup: abort at 3s.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 3000);
   try {
-    const res = await fetch('https://api.github.com/repos/eigenpal/docx-editor');
+    const res = await fetch('https://api.github.com/repos/eigenpal/docx-editor', {
+      signal: controller.signal,
+    });
     const data = await res.json();
     if (typeof data.stargazers_count === 'number') return data.stargazers_count;
-  } catch {}
+  } catch {
+    // Offline / rate-limited / blocked — stars are cosmetic, keep serving.
+  } finally {
+    clearTimeout(timer);
+  }
   return null;
 }
 
