@@ -198,8 +198,10 @@ export function useFormattingActions({
             if (m.type.name === 'italic') textFormatting.italic = true;
             if (m.type.name === 'underline') textFormatting.underline = { style: 'single' };
             if (m.type.name === 'strike') textFormatting.strike = true;
-            if (m.type.name === 'fontSize') textFormatting.fontSize = m.attrs.size ?? m.attrs.sizeCs;
-            if (m.type.name === 'fontFamily') textFormatting.fontFamily = { ascii: m.attrs.ascii, hAnsi: m.attrs.hAnsi };
+            if (m.type.name === 'fontSize')
+              textFormatting.fontSize = m.attrs.size ?? m.attrs.sizeCs;
+            if (m.type.name === 'fontFamily')
+              textFormatting.fontFamily = { ascii: m.attrs.ascii, hAnsi: m.attrs.hAnsi };
             if (m.type.name === 'textColor') textFormatting.color = m.attrs.color;
             if (m.type.name === 'highlight') textFormatting.highlight = m.attrs.highlight;
             if (m.type.name === 'superscript') textFormatting.vertAlign = 'superscript';
@@ -224,21 +226,44 @@ export function useFormattingActions({
               let maxKey = '';
               let maxCount = 0;
               for (const [k, c] of Object.entries(counts)) {
-                if (c > maxCount) { maxCount = c; maxKey = k; }
+                if (c > maxCount) {
+                  maxCount = c;
+                  maxKey = k;
+                }
               }
               if (maxKey) {
                 const attrs = JSON.parse(maxKey);
                 switch (name) {
-                  case 'bold': textFormatting.bold = true; break;
-                  case 'italic': textFormatting.italic = true; break;
-                  case 'underline': textFormatting.underline = { style: attrs.style || 'single' }; break;
-                  case 'strike': textFormatting.strike = true; break;
-                  case 'fontSize': textFormatting.fontSize = attrs.size ?? attrs.sizeCs; break;
-                  case 'fontFamily': textFormatting.fontFamily = { ascii: attrs.ascii, hAnsi: attrs.hAnsi }; break;
-                  case 'textColor': textFormatting.color = attrs.color; break;
-                  case 'highlight': textFormatting.highlight = attrs.highlight; break;
-                  case 'superscript': textFormatting.vertAlign = 'superscript'; break;
-                  case 'subscript': textFormatting.vertAlign = 'subscript'; break;
+                  case 'bold':
+                    textFormatting.bold = true;
+                    break;
+                  case 'italic':
+                    textFormatting.italic = true;
+                    break;
+                  case 'underline':
+                    textFormatting.underline = { style: attrs.style || 'single' };
+                    break;
+                  case 'strike':
+                    textFormatting.strike = true;
+                    break;
+                  case 'fontSize':
+                    textFormatting.fontSize = attrs.size ?? attrs.sizeCs;
+                    break;
+                  case 'fontFamily':
+                    textFormatting.fontFamily = { ascii: attrs.ascii, hAnsi: attrs.hAnsi };
+                    break;
+                  case 'textColor':
+                    textFormatting.color = attrs.color;
+                    break;
+                  case 'highlight':
+                    textFormatting.highlight = attrs.highlight;
+                    break;
+                  case 'superscript':
+                    textFormatting.vertAlign = 'superscript';
+                    break;
+                  case 'subscript':
+                    textFormatting.vertAlign = 'subscript';
+                    break;
                 }
               }
             }

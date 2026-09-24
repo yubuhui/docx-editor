@@ -246,6 +246,17 @@ export default [
     },
   },
 
+  // Toolbar.tsx is the React formatting bar — the twin of Toolbar.vue.
+  // The same printWidth wrapping of labelled buttons/tooltips pushed it
+  // just over the default 1000 once formatted. Headroom while a real split
+  // is planned; the cap still enforces a ceiling (mirrors Toolbar.vue).
+  {
+    files: ['packages/react/src/components/Toolbar.tsx'],
+    rules: {
+      'max-lines': ['error', { max: 1200, skipBlankLines: false, skipComments: false }],
+    },
+  },
+
   // Agent-use framework-agnostic surface — top-level utilities + tools/,
   // ai-sdk/ (excluding the per-framework entry files), i18n/, __tests__/.
   // TODO: drop the `ignores` list once task §9 migrates the React hooks

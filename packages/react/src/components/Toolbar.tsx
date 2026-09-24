@@ -956,10 +956,20 @@ export function Toolbar(explicitProps: ToolbarProps) {
 
       {/* Format Painter */}
       <ToolbarButton
-        onClick={() => handleFormat(formatPainterActive ? 'formatPainterPaste' : 'formatPainterCopy')}
+        onClick={() =>
+          handleFormat(formatPainterActive ? 'formatPainterPaste' : 'formatPainterCopy')
+        }
         disabled={disabled}
-        title={formatPainterActive ? t('formattingBar.formatPainterPaste') : t('formattingBar.formatPainterCopy')}
-        ariaLabel={formatPainterActive ? t('formattingBar.formatPainterPaste') : t('formattingBar.formatPainterCopy')}
+        title={
+          formatPainterActive
+            ? t('formattingBar.formatPainterPaste')
+            : t('formattingBar.formatPainterCopy')
+        }
+        ariaLabel={
+          formatPainterActive
+            ? t('formattingBar.formatPainterPaste')
+            : t('formattingBar.formatPainterCopy')
+        }
         active={formatPainterActive}
       >
         <MaterialSymbol name="format_paint" size={ICON_SIZE} />

@@ -18,7 +18,8 @@ function parsePara(xml: string) {
  */
 describe('line spacing round-trip', () => {
   test('parses fixed 28pt (560 twips, lineRule=exact)', () => {
-    const p = parsePara(`<w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+    const p =
+      parsePara(`<w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
       <w:pPr><w:spacing w:line="560" w:lineRule="exact"/></w:pPr>
     </w:p>`);
     expect(p.formatting?.lineSpacing).toBe(560);
@@ -26,7 +27,8 @@ describe('line spacing round-trip', () => {
   });
 
   test('parses min 25pt (500 twips, lineRule=atLeast)', () => {
-    const p = parsePara(`<w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+    const p =
+      parsePara(`<w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
       <w:pPr><w:spacing w:line="500" w:lineRule="atLeast"/></w:pPr>
     </w:p>`);
     expect(p.formatting?.lineSpacing).toBe(500);
@@ -34,7 +36,8 @@ describe('line spacing round-trip', () => {
   });
 
   test('parses auto spacing rule with before/after autospacing flags', () => {
-    const p = parsePara(`<w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+    const p =
+      parsePara(`<w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
       <w:pPr><w:spacing w:beforeAutospacing="1" w:afterAutospacing="1"/></w:pPr>
     </w:p>`);
     expect(p.formatting?.beforeAutospacing).toBe(true);
@@ -42,23 +45,28 @@ describe('line spacing round-trip', () => {
   });
 
   test('serializer keeps line + lineRule for exact', () => {
-    const s = serializeParagraph(parsePara(`<w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+    const s = serializeParagraph(
+      parsePara(`<w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
       <w:pPr><w:spacing w:line="560" w:lineRule="exact"/></w:pPr>
-    </w:p>`));
+    </w:p>`)
+    );
     expect(s).toContain('w:line="560"');
     expect(s).toContain('w:lineRule="exact"');
   });
 
   test('serializer keeps autospacing flags', () => {
-    const s = serializeParagraph(parsePara(`<w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+    const s = serializeParagraph(
+      parsePara(`<w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
       <w:pPr><w:spacing w:beforeAutospacing="1" w:afterAutospacing="1"/></w:pPr>
-    </w:p>`));
+    </w:p>`)
+    );
     expect(s).toContain('w:beforeAutospacing="1"');
     expect(s).toContain('w:afterAutospacing="1"');
   });
 
   test('full round-trip preserves fixed 28pt exact spacing', () => {
-    const p = parsePara(`<w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+    const p =
+      parsePara(`<w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
       <w:pPr><w:spacing w:line="560" w:lineRule="exact"/></w:pPr>
     </w:p>`);
     const s = serializeParagraph(p);
@@ -68,7 +76,8 @@ describe('line spacing round-trip', () => {
   });
 
   test('round-trip preserves min 25pt atLeast', () => {
-    const p = parsePara(`<w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+    const p =
+      parsePara(`<w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
       <w:pPr><w:spacing w:line="500" w:lineRule="atLeast"/></w:pPr>
     </w:p>`);
     const s = serializeParagraph(p);

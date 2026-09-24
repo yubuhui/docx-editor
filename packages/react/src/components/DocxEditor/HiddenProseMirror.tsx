@@ -408,8 +408,8 @@ const HiddenProseMirrorComponent = forwardRef<HiddenProseMirrorRef, HiddenProseM
               // Offset the host so the PM selection aligns with painted caret
               const deltaX = paintedCaret.left - pmSelLeft;
               const deltaY = paintedCaret.top - pmSelTop;
-              hostEl.style.left = (hostRect.left + deltaX) + 'px';
-              hostEl.style.top = (hostRect.top + deltaY) + 'px';
+              hostEl.style.left = hostRect.left + deltaX + 'px';
+              hostEl.style.top = hostRect.top + deltaY + 'px';
             }
             return false;
           },
