@@ -16,6 +16,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { CSSProperties, FormEvent, KeyboardEvent } from 'react';
 import { useTranslation } from '../../i18n';
+import { MaterialSymbol } from '../ui/Icons';
 
 // ============================================================================
 // TYPES
@@ -508,7 +509,7 @@ export function HyperlinkDialog({
             onClick={onClose}
             aria-label={t('common.closeDialog')}
           >
-            &times;
+            <MaterialSymbol name="close" size={16} />
           </button>
         </div>
 

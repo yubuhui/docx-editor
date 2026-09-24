@@ -142,7 +142,7 @@ Shared orchestration lives in core — the React adapter delegates through thin 
 
 ### Pitfalls
 
-- **Icons** — inline SVG in `components/ui/Icons.tsx`, NOT a font. `<MaterialSymbol name="x">` looks up `iconMap`; missing → renders raw text. Add SVG paths from fonts.google.com/icons.
+- **Icons** — inline SVG in `components/ui/Icons.tsx`, NOT a font or emoji. `<MaterialSymbol name="x">` looks up `iconMap`; a missing name renders raw text, so paste the official SVG path from fonts.google.com/icons into `Icons.tsx` (component + `iconMap` entry).
 - **Tailwind scope** — library scoped to `.ep-root`. Painter output isn't always protected → use inline styles on painted elements.
 - **Colors** — chrome colors reference the `--doc-*` tokens defined in `packages/core/src/styles/editor.css` (single source); new tokens go in its light block, with a `.ep-root.dark` override only when the surface itself is theme-variant. Document-domain/OOXML values and decorative artwork stay literal and carry a `color-token-ignore: <reason>` (same/previous line) or `color-token-ignore-file: <reason>` comment — enforced by `bun run check:ui-colors`. Canvas highlight tokens (`--doc-comment-highlight-*`, `--doc-insertion-*`, `--doc-deletion-*`) are never overridden in dark mode: the canvas is inverted with `filter`.
 - **Focus stealing** — any mousedown that bubbles to PM moves caret. Dropdown/dialog mousedown needs `stopPropagation()`.

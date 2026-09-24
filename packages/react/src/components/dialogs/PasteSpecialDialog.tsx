@@ -13,6 +13,7 @@ import type { ParsedClipboardContent } from '@eigenpal/docx-editor-core/utils';
 import { readFromClipboard } from '@eigenpal/docx-editor-core/utils';
 import { useTranslation } from '../../i18n';
 import type { TranslationKey } from '@eigenpal/docx-editor-i18n';
+import { MaterialSymbol } from '../ui/Icons';
 
 // ============================================================================
 // TYPES
@@ -425,14 +426,7 @@ export const PasteSpecialDialog: React.FC<PasteSpecialDialogProps> = ({
             color: 'var(--doc-text-muted)',
           }}
         >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path
-              d="M4 4l8 8M12 4l-8 8"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            />
-          </svg>
+          <MaterialSymbol name="close" size={16} />
         </button>
       </div>
 

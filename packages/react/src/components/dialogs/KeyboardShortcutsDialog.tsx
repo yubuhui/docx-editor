@@ -15,6 +15,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from '../../i18n';
+import { MaterialSymbol } from '../ui/Icons';
 import type { TranslationKey } from '@eigenpal/docx-editor-i18n';
 import {
   CATEGORY_LABEL_KEYS,
@@ -295,14 +296,7 @@ export const KeyboardShortcutsDialog: React.FC<KeyboardShortcutsDialogProps> = (
               color: 'var(--doc-text-muted)',
             }}
           >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path
-                d="M5 5l10 10M15 5L5 15"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-            </svg>
+            <MaterialSymbol name="close" size={16} />
           </button>
         </div>
 

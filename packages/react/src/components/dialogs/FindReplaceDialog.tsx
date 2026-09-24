@@ -12,6 +12,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { CSSProperties, KeyboardEvent, ChangeEvent } from 'react';
 import { useTranslation } from '../../i18n';
+import { MaterialSymbol } from '../ui/Icons';
 
 // Re-export types and utilities so existing imports still work
 export type { FindMatch, FindOptions, FindResult, HighlightOptions } from './findReplaceUtils';
@@ -575,7 +576,7 @@ export function FindReplaceDialog({
             onClick={onClose}
             aria-label={t('common.closeDialog')}
           >
-            &times;
+            <MaterialSymbol name="close" size={16} />
           </button>
         </div>
 

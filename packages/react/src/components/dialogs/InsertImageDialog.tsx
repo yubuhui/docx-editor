@@ -541,7 +541,7 @@ export function InsertImageDialog({
             onClick={onClose}
             aria-label={t('common.closeDialog')}
           >
-            &times;
+            <MaterialSymbol name="close" size={16} />
           </button>
         </div>
 

@@ -846,6 +846,76 @@ export function IconAgentSparkle(props: IconProps) {
 }
 
 // ============================================================================
+// CONTEXT MENU ICONS
+// ============================================================================
+
+// Official Material Symbols (24dp outlined), source: https://fonts.google.com/icons
+
+export function IconOpenInFull(props: IconProps) {
+  return (
+    <SvgIcon {...props}>
+      <path d="M120-120v-320h80v184l504-504H520v-80h320v320h-80v-184L256-200h184v80H120Z" />
+    </SvgIcon>
+  );
+}
+
+export function IconSubject(props: IconProps) {
+  return (
+    <SvgIcon {...props}>
+      <path d="M160-200v-80h400v80H160Zm0-160v-80h640v80H160Zm0-160v-80h640v80H160Zm0-160v-80h640v80H160Z" />
+    </SvgIcon>
+  );
+}
+
+export function IconTranslate(props: IconProps) {
+  return (
+    <SvgIcon {...props}>
+      <path d="m476-80 182-480h84L924-80h-84l-43-122H603L560-80h-84ZM160-200l-56-56 202-202q-35-35-63.5-80T190-640h84q20 39 40 68t48 58q33-33 68.5-92.5T484-720H40v-80h280v-80h80v80h280v80H564q-21 72-63 148t-83 116l96 98-30 82-122-125-202 201Zm468-72h144l-72-204-72 204Z" />
+    </SvgIcon>
+  );
+}
+
+export function IconHelp(props: IconProps) {
+  return (
+    <SvgIcon {...props}>
+      <path d="M513.5-254.5Q528-269 528-290t-14.5-35.5Q499-340 478-340t-35.5 14.5Q428-311 428-290t14.5 35.5Q457-240 478-240t35.5-14.5ZM442-394h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+    </SvgIcon>
+  );
+}
+
+export function IconSpellcheck(props: IconProps) {
+  return (
+    <SvgIcon {...props}>
+      <path d="M564-80 394-250l56-56 114 114 226-226 56 56L564-80ZM120-320l194-520h94l194 520h-92l-46-132H254l-46 132h-88Zm162-208h156l-76-216h-4l-76 216Z" />
+    </SvgIcon>
+  );
+}
+
+export function IconArticle(props: IconProps) {
+  return (
+    <SvgIcon {...props}>
+      <path d="M280-280h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm-80 480q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z" />
+    </SvgIcon>
+  );
+}
+
+export function IconSentimentSatisfied(props: IconProps) {
+  return (
+    <SvgIcon {...props}>
+      <path d="M620-520q25 0 42.5-17.5T680-580q0-25-17.5-42.5T620-640q-25 0-42.5 17.5T560-580q0 25 17.5 42.5T620-520Zm-280 0q25 0 42.5-17.5T400-580q0-25-17.5-42.5T340-640q-25 0-42.5 17.5T280-580q0 25 17.5 42.5T340-520Zm263.5 221.5Q659-337 684-400h-66q-22 37-58.5 58.5T480-320q-43 0-79.5-21.5T342-400h-66q25 63 80.5 101.5T480-260q68 0 123.5-38.5ZM324-111.5Q251-143 197-197t-85.5-127Q80-397 80-480t31.5-156Q143-709 197-763t127-85.5Q397-880 480-880t156 31.5Q709-817 763-763t85.5 127Q880-563 880-480t-31.5 156Q817-251 763-197t-127 85.5Q563-80 480-80t-156-31.5ZM480-480Zm227 227q93-93 93-227t-93-227q-93-93-227-93t-227 93q-93 93-93 227t93 227q93 93 227 93t227-93Z" />
+    </SvgIcon>
+  );
+}
+
+export function IconEdit(props: IconProps) {
+  return (
+    <SvgIcon {...props}>
+      <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" />
+    </SvgIcon>
+  );
+}
+
+// ============================================================================
 // ICON MAP - for MaterialSymbol compatibility
 // ============================================================================
 
@@ -956,6 +1026,16 @@ const iconMap: Record<string, React.ComponentType<IconProps>> = {
   edit_note: IconEditNote,
   rate_review: IconRateReview,
   visibility: IconVisibility,
+  // AI context menu actions
+  auto_awesome: IconAgentSparkle, // IconAgentSparkle carries the official auto_awesome path
+  edit: IconEdit,
+  open_in_full: IconOpenInFull,
+  subject: IconSubject,
+  translate: IconTranslate,
+  help: IconHelp,
+  spellcheck: IconSpellcheck,
+  article: IconArticle,
+  sentiment_satisfied: IconSentimentSatisfied,
   // Text direction
   format_textdirection_l_to_r: IconTextDirectionLtr,
   format_textdirection_r_to_l: IconTextDirectionRtl,

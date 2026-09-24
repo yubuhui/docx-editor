@@ -14,6 +14,7 @@ import {
 import { useTranslation } from '../i18n';
 import type { TranslationKey } from '@eigenpal/docx-editor-i18n';
 import { Z_INDEX } from '../styles/zIndex';
+import { MaterialSymbol } from './ui/Icons';
 
 const AI_ACTION_KEY_MAP: Record<AIAction, TranslationKey> = {
   askAI: 'contextMenu.aiActions.askAi',
@@ -80,141 +81,25 @@ interface CustomPromptDialogProps {
 // ICONS
 // ============================================================================
 
-const AskAIIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
-    <path d="M8 4v4M8 10v1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-);
-
-const RewriteIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M13 3L3 13M3 3h4v4M13 13h-4v-4"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
-const ExpandIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-);
-
-const SummarizeIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M3 4h10M3 8h7M3 12h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-);
-
-const TranslateIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M2 3h6M5 3v6M3 5c0 2 1 4 2 4s2-2 2-4"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    />
-    <path
-      d="M9 7l3 6M15 7l-3 6M10 11h4"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    />
-  </svg>
-);
-
-const ExplainIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" />
-    <path
-      d="M6 6c0-1.1.9-2 2-2s2 .9 2 2c0 1.5-2 1.5-2 3"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    />
-    <circle cx="8" cy="12" r="0.5" fill="currentColor" />
-  </svg>
-);
-
-const GrammarIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M4 12l3-8 3 8M5 10h4"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M12 6l2 2-2 2"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
-const FormalIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="3" y="3" width="10" height="10" rx="1" stroke="currentColor" strokeWidth="1.5" />
-    <path d="M6 7h4M6 9h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-);
-
-const CasualIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="8" cy="8" r="5" stroke="currentColor" strokeWidth="1.5" />
-    <path
-      d="M6 9c.5.5 1 1 2 1s1.5-.5 2-1"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    />
-    <circle cx="6" cy="7" r="0.5" fill="currentColor" />
-    <circle cx="10" cy="7" r="0.5" fill="currentColor" />
-  </svg>
-);
-
-const CustomIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-);
+/** Material Symbol name per AI action (official paths live in ui/Icons.tsx). */
+const ACTION_ICON_NAMES: Record<AIAction, string> = {
+  askAI: 'auto_awesome',
+  rewrite: 'edit',
+  expand: 'open_in_full',
+  summarize: 'subject',
+  translate: 'translate',
+  explain: 'help',
+  fixGrammar: 'spellcheck',
+  makeFormal: 'article',
+  makeCasual: 'sentiment_satisfied',
+  custom: 'edit_note',
+};
 
 /**
  * Get icon for an action
  */
 function getActionIcon(action: AIAction): React.ReactNode {
-  switch (action) {
-    case 'askAI':
-      return <AskAIIcon />;
-    case 'rewrite':
-      return <RewriteIcon />;
-    case 'expand':
-      return <ExpandIcon />;
-    case 'summarize':
-      return <SummarizeIcon />;
-    case 'translate':
-      return <TranslateIcon />;
-    case 'explain':
-      return <ExplainIcon />;
-    case 'fixGrammar':
-      return <GrammarIcon />;
-    case 'makeFormal':
-      return <FormalIcon />;
-    case 'makeCasual':
-      return <CasualIcon />;
-    case 'custom':
-      return <CustomIcon />;
-    default:
-      return null;
-  }
+  return <MaterialSymbol name={ACTION_ICON_NAMES[action]} size={16} />;
 }
 
 // ============================================================================

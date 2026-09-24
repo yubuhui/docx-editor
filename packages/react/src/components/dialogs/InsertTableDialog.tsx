@@ -14,6 +14,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import type { CSSProperties, KeyboardEvent } from 'react';
 import { useTranslation } from '../../i18n';
+import { MaterialSymbol } from '../ui/Icons';
 
 // ============================================================================
 // TYPES
@@ -441,7 +442,7 @@ export function InsertTableDialog({
             onClick={onClose}
             aria-label={t('common.closeDialog')}
           >
-            &times;
+            <MaterialSymbol name="close" size={16} />
           </button>
         </div>
 

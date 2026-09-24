@@ -164,6 +164,16 @@ export default [
     },
   },
 
+  // Icons.tsx is the single inline-SVG registry for Material Symbols; every
+  // new glyph adds a small component. Reuse first (`select_all` → grid glyph),
+  // then paste the official path — the modest cap keeps a ceiling.
+  {
+    files: ['packages/react/src/components/ui/Icons.tsx'],
+    rules: {
+      'max-lines': ['error', { max: 1100, skipBlankLines: false, skipComments: false }],
+    },
+  },
+
   // editor-page.ts is the e2e Page Object Model — a single class covering
   // every editor interaction. It's intentionally one file; the cap still
   // enforces a ceiling (modest headroom over its current size) so it can't
