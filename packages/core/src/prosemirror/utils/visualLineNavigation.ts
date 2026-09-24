@@ -1,17 +1,16 @@
 /**
  * Visual line navigation helpers — implements Word/Google-Docs-style
  * ArrowUp / ArrowDown with sticky X across visual lines (not just
- * paragraphs). Lifted from packages/react/src/paged-editor/
- * useVisualLineNavigation.ts so both adapters share the algorithm.
+ * paragraphs). The React adapter's `useVisualLineNavigation` hook is a
+ * thin binding over this module.
  *
- * Frontend-agnostic: takes a `getContainer: () => HTMLElement | null`
- * callback and a mutable sticky-state object, returns the same
- * function quartet React's hook returns.
+ * Frontend-agnostic: takes a container element and a mutable sticky-state
+ * object, returns the function quartet the hook exposes.
  *
  * @remarks
- * Tagged `@internal` post-1.0 cut. Both adapters re-export this through
- * their own composables (`useVisualLineNavigation`); consumers should
- * prefer those. The subpath stays in `package.json` `exports` for
+ * Tagged `@internal` post-1.0 cut. The React adapter re-exports this
+ * through its own hook (`useVisualLineNavigation`); consumers should
+ * prefer that. The subpath stays in `package.json` `exports` for
  * back-compat; expect it to move behind a public surface in a future
  * major.
  *
@@ -21,6 +20,7 @@
 import { TextSelection } from 'prosemirror-state';
 import type { EditorView } from 'prosemirror-view';
 import { findVerticalScrollParent } from '../../utils/findVerticalScrollParent';
+import { findBodyEmptyRuns, findBodyPmSpans } from '../../layout-bridge/findBodyPmSpans';
 
 const CONTENT_LINE_SELECTOR = '.layout-page-content .layout-line';
 
@@ -48,19 +48,26 @@ function scrollIntoViewIfNeeded(el: HTMLElement): void {
   }
 }
 
-/** @internal */
+/**
+ * Resolve the client X of the caret at `pmPos`.
+ *
+ * Body-scoped: header/footer runs live in separate PM documents whose
+ * positions overlap the body's, so an unscoped query can latch onto an HF
+ * span that happens to share the position (see `findBodyPmSpans`).
+ *
+ * @internal
+ */
 export function getCaretClientX(container: HTMLElement, pmPos: number): number | null {
-  const spans = container.querySelectorAll('span[data-pm-start][data-pm-end]');
-  for (const span of Array.from(spans)) {
-    const spanEl = span as HTMLElement;
+  const spans = findBodyPmSpans(container);
+  for (const spanEl of spans) {
     const pmStart = Number(spanEl.dataset.pmStart);
     const pmEnd = Number(spanEl.dataset.pmEnd);
     if (spanEl.classList.contains('layout-run-tab')) {
       if (pmPos >= pmStart && pmPos < pmEnd) return spanEl.getBoundingClientRect().left;
       continue;
     }
-    if (pmPos >= pmStart && pmPos <= pmEnd && span.firstChild?.nodeType === Node.TEXT_NODE) {
-      const textNode = span.firstChild as Text;
+    if (pmPos >= pmStart && pmPos <= pmEnd && spanEl.firstChild?.nodeType === Node.TEXT_NODE) {
+      const textNode = spanEl.firstChild as Text;
       const charIndex = Math.min(pmPos - pmStart, textNode.length);
       const ownerDoc = spanEl.ownerDocument;
       if (!ownerDoc) continue;
@@ -70,8 +77,7 @@ export function getCaretClientX(container: HTMLElement, pmPos: number): number |
       return range.getBoundingClientRect().left;
     }
   }
-  const emptyRuns = container.querySelectorAll('.layout-empty-run');
-  for (const emptyRun of Array.from(emptyRuns)) {
+  for (const emptyRun of findBodyEmptyRuns(container)) {
     const paragraph = emptyRun.closest('.layout-paragraph') as HTMLElement;
     if (!paragraph) continue;
     const pmStart = Number(paragraph.dataset.pmStart);

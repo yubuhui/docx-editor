@@ -15,7 +15,7 @@ export function findLineElementAtPosition(container: HTMLElement, pmPos: number)
 // @internal (undocumented)
 export function findPositionOnLineAtClientX(lineEl: HTMLElement, clientX: number): number | null;
 
-// @internal (undocumented)
+// @internal
 export function getCaretClientX(container: HTMLElement, pmPos: number): number | null;
 
 // @internal (undocumented)
