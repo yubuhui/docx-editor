@@ -19,9 +19,13 @@ import {
   type ImageLayoutTarget,
 } from '@eigenpal/docx-editor-core/prosemirror/commands';
 import type { WrapType } from '@eigenpal/docx-editor-core/docx/wrapTypes';
-import { en as defaultLocale } from '@eigenpal/docx-editor-i18n';
-import { useTranslation } from '../../../i18n';
-import type { Translations } from '@eigenpal/docx-editor-i18n';
+import {
+  createT,
+  deepMerge,
+  en as defaultLocale,
+  type LocaleStrings,
+  type Translations,
+} from '@eigenpal/docx-editor-i18n';
 import { useImageContextMenu } from '../../ImageContextMenu';
 import { type TextContextAction, type TextContextMenuItem } from '../../TextContextMenu';
 import { findSelectionYPosition } from '../internals/pmAnchors';
@@ -70,7 +74,18 @@ export function useContextMenus({
   i18n: Translations | undefined;
   onAddComment: (range: { from: number; to: number; yPos: number | null }) => void;
 }) {
-  const { t } = useTranslation();
+  // This hook runs in `DocxEditor`'s body, which sits OUTSIDE the internal
+  // `<LocaleProvider>` (see DocxEditorShell) — `useTranslation()` here would
+  // always read the English default. Build `t` from the `i18n` prop so menu
+  // labels follow the same locale as the rest of the editor UI.
+  const t = useMemo(() => {
+    const merged = deepMerge(
+      defaultLocale as unknown as Record<string, unknown>,
+      i18n as unknown as Record<string, unknown> | undefined
+    ) as unknown as LocaleStrings;
+    const lang = typeof i18n?._lang === 'string' ? i18n._lang : 'en';
+    return createT(merged, lang);
+  }, [i18n]);
   const [contextMenu, setContextMenu] = useState<ContextMenuState>({
     isOpen: false,
     position: { x: 0, y: 0 },
@@ -236,36 +251,36 @@ export function useContextMenus({
     if (contextMenu.hasSelection) {
       items.push({
         action: 'addComment',
-        label: 'Comment',
+        label: t('contextMenu.comment'),
         dividerAfter: !contextMenu.cursorInTable,
       });
     }
     if (contextMenu.cursorInTable) {
       items.push(
-        { action: 'addRowAbove', label: 'Insert row above' },
-        { action: 'addRowBelow', label: 'Insert row below' },
-        { action: 'deleteRow', label: 'Delete row', dividerAfter: true },
-        { action: 'addColumnLeft', label: 'Insert column left' },
-        { action: 'addColumnRight', label: 'Insert column right' },
-        { action: 'deleteColumn', label: 'Delete column' },
+        { action: 'addRowAbove', label: t('table.insertRowAbove') },
+        { action: 'addRowBelow', label: t('table.insertRowBelow') },
+        { action: 'deleteRow', label: t('table.deleteRow'), dividerAfter: true },
+        { action: 'addColumnLeft', label: t('table.insertColumnLeft') },
+        { action: 'addColumnRight', label: t('table.insertColumnRight') },
+        { action: 'deleteColumn', label: t('table.deleteColumn') },
         {
           action: 'mergeCells',
-          label: i18n?.table?.mergeCells ?? defaultLocale.table.mergeCells,
+          label: t('table.mergeCells'),
           disabled: !contextMenu.tableContext?.hasMultiCellSelection,
         },
         {
           action: 'splitCell',
-          label: i18n?.table?.splitCell ?? defaultLocale.table.splitCell,
+          label: t('table.splitCell'),
           disabled: !contextMenu.tableContext?.canSplitCell,
           dividerAfter: true,
         },
         {
           action: 'selectTable',
-          label: i18n?.table?.selectTable ?? defaultLocale.table.selectTable,
+          label: t('table.selectTable'),
         },
         {
           action: 'deleteTable',
-          label: i18n?.table?.deleteTable ?? defaultLocale.table.deleteTable,
+          label: t('table.deleteTable'),
           dividerAfter: true,
         }
       );
@@ -276,7 +291,7 @@ export function useContextMenus({
       shortcut: formatKeys(t('contextMenu.selectAllShortcut')),
     });
     return items;
-  }, [contextMenu.hasSelection, contextMenu.cursorInTable, contextMenu.tableContext, i18n, t]);
+  }, [contextMenu.hasSelection, contextMenu.cursorInTable, contextMenu.tableContext, t]);
 
   const handleContextMenuAction = useCallback(
     async (action: TextContextAction) => {
