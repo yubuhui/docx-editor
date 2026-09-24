@@ -3,9 +3,14 @@
 > 仓库：`D:\Ai_Project\lawyer_assistant\.lawyer\docx-editor-src`（fork 自维护线，见 SELF-MAINTENANCE.md）
 > 本版替代 2026-09-24 早期《质量底线规范化改造》版本（Vue 范围作废，保留其 React 部分按裁剪后重排）。
 > 红线（不得破坏）：`.ep-root` 类名前缀不迁移；修订/评论留在 free core；`packages/*/dist` 不提交；`i18n → core → agents → react` 四包构建链保持可用。
-> 状态：**执行中。阶段 0（架构裁剪，commit e4d2c50）✅；阶段 1（文档改造）✅ 待提交；阶段 2-7 待执行。**
-> 4 项已裁决：①发布链删除 ②docs/site 全量清扫 ③手写 X SVG 一并换 ④smoke 覆盖现在移植。
-> 环境注意：一律 `bunx playwright`（npx 会逃逸到父项目）；浏览器镜像 `PLAYWRIGHT_DOWNLOAD_HOST=https://cdn.npmmirror.com/binaries/playwright`。
+> 状态：**全部 8 个阶段已完成（分支 `refactor/react-only-normalization`）。**
+>
+> - 阶段 0 架构裁剪 `e4d2c50`；阶段 1 文档改造 `0bc641a`；阶段 2 动效统一 `ff864e9`
+> - 阶段 3 颜色 token + 门禁 `49bd445`（另 `7cbc5ba` 修复 e2e newDocument 选择器歧义）
+> - 阶段 4 visualLine 委托 core `4372ce4`；阶段 5 图标规范化 `832ee11`
+> - 阶段 6 对话框焦点防护 `e11bd29`；阶段 7 CI e2e smoke（见分支最终 commit）
+>   4 项裁决：①发布链删除 ②docs/site 全量清扫 ③手写 X SVG 一并换 ④smoke 覆盖现在移植。
+>   环境注意：一律 `bunx playwright`（npx 会逃逸到父项目）；浏览器镜像 `PLAYWRIGHT_DOWNLOAD_HOST=https://cdn.npmmirror.com/binaries/playwright`。
 
 ---
 
