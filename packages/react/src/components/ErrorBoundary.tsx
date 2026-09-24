@@ -246,7 +246,7 @@ function NotificationToast({ notification, onDismiss }: NotificationToastProps) 
     borderRadius: '8px',
     padding: '12px 16px',
     boxShadow: '0 2px 8px var(--doc-shadow)',
-    animation: 'slideIn 0.3s ease-out',
+    animation: 'docx-slide-in 0.3s ease-out',
   };
 
   const headerStyle: CSSProperties = {
@@ -349,20 +349,6 @@ function NotificationToast({ notification, onDismiss }: NotificationToastProps) 
       className={`docx-notification-toast docx-notification-${notification.severity}`}
       style={toastStyle}
     >
-      <style>
-        {`
-          @keyframes slideIn {
-            from {
-              opacity: 0;
-              transform: translateX(100%);
-            }
-            to {
-              opacity: 1;
-              transform: translateX(0);
-            }
-          }
-        `}
-      </style>
       <div style={headerStyle}>
         <span style={iconStyle}>{getIcon(notification.severity)}</span>
         <div style={contentStyle}>

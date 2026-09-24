@@ -115,33 +115,6 @@ const DEFAULT_COLOR = 'var(--doc-primary)';
 const MIN_LOADING_DURATION = 300; // Minimum ms to show loading to prevent flash
 
 // ============================================================================
-// KEYFRAMES STYLES
-// ============================================================================
-
-const spinnerKeyframes = `
-@keyframes docx-loading-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@keyframes docx-loading-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.95); }
-}
-
-@keyframes docx-loading-dots {
-  0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
-  40% { transform: scale(1); opacity: 1; }
-}
-
-@keyframes docx-loading-bar {
-  0% { left: -35%; right: 100%; }
-  60% { left: 100%; right: -90%; }
-  100% { left: 100%; right: -90%; }
-}
-`;
-
-// ============================================================================
 // SPINNER VARIANTS
 // ============================================================================
 
@@ -326,17 +299,6 @@ export const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
 }) => {
   const { t } = useTranslation();
   const sizeConfig = SIZE_CONFIG[size];
-
-  // Inject keyframes
-  useEffect(() => {
-    const styleId = 'docx-loading-keyframes';
-    if (!document.getElementById(styleId)) {
-      const styleElement = document.createElement('style');
-      styleElement.id = styleId;
-      styleElement.textContent = spinnerKeyframes;
-      document.head.appendChild(styleElement);
-    }
-  }, []);
 
   if (!isLoading) return null;
 

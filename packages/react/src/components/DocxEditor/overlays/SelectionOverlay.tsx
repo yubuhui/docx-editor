@@ -95,6 +95,30 @@ const selectionRectStyles = (rect: SelectionRect, color: string): React.CSSPrope
 // =============================================================================
 
 /**
+ * Whether the user prefers reduced motion. When true the caret skips the JS
+ * blink interval and stays solid (CSS transitions are collapsed in
+ * core `editor.css` under the same media query).
+ */
+function usePrefersReducedMotion(): boolean {
+  const [reduced, setReduced] = useState(
+    () =>
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return;
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const onChange = () => setReduced(query.matches);
+    query.addEventListener('change', onChange);
+    return () => query.removeEventListener('change', onChange);
+  }, []);
+
+  return reduced;
+}
+
+/**
  * Caret component with blinking animation.
  */
 const Caret: React.FC<{
@@ -114,12 +138,15 @@ const Caret: React.FC<{
       blinkTimerRef.current = null;
     }
 
-    // Only blink when focused and interval is set
-    if (isFocused && blinkInterval > 0) {
+    // Blink only while focused. An interval of 0 keeps the caret solid
+    // (used for prefers-reduced-motion).
+    if (isFocused) {
       setVisible(true);
-      blinkTimerRef.current = window.setInterval(() => {
-        setVisible((v) => !v);
-      }, blinkInterval);
+      if (blinkInterval > 0) {
+        blinkTimerRef.current = window.setInterval(() => {
+          setVisible((v) => !v);
+        }, blinkInterval);
+      }
     } else {
       // Hide caret when not focused
       setVisible(false);
@@ -191,6 +218,8 @@ export const SelectionOverlay: React.FC<SelectionOverlayProps> = ({
   caretWidth = DEFAULT_CARET_WIDTH,
   blinkInterval = DEFAULT_BLINK_INTERVAL,
 }) => {
+  const prefersReducedMotion = usePrefersReducedMotion();
+
   if (readOnly) {
     return null;
   }
@@ -217,7 +246,7 @@ export const SelectionOverlay: React.FC<SelectionOverlayProps> = ({
           position={caretPosition}
           color={caretColor}
           width={caretWidth}
-          blinkInterval={blinkInterval}
+          blinkInterval={prefersReducedMotion ? 0 : blinkInterval}
           isFocused={isFocused}
         />
       )}

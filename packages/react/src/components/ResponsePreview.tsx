@@ -111,7 +111,7 @@ const LoadingSpinner = () => (
     viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    style={{ animation: 'spin 1s linear infinite' }}
+    style={{ animation: 'docx-spin 1s linear infinite' }}
   >
     <circle cx="10" cy="10" r="8" stroke="var(--doc-border)" strokeWidth="2" fill="none" />
     <path
@@ -121,12 +121,6 @@ const LoadingSpinner = () => (
       strokeLinecap="round"
       fill="none"
     />
-    <style>{`
-      @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-      }
-    `}</style>
   </svg>
 );
 

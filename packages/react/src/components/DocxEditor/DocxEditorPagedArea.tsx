@@ -507,6 +507,7 @@ export function DocxEditorPagedArea({
                 <>
                   <div
                     aria-hidden="true"
+                    className="docx-hf-caret"
                     style={{
                       position: 'absolute',
                       top: hfCaretRect.top,
@@ -516,7 +517,6 @@ export function DocxEditorPagedArea({
                       background: '#4285f4',
                       pointerEvents: 'none',
                       zIndex: 11,
-                      animation: 'hf-caret-blink 1.06s steps(1) infinite',
                     }}
                   />
                 </>

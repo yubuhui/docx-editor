@@ -156,13 +156,6 @@ const UnsavedIcon = ({ size = 16 }: { size?: number }) => (
 // STYLES
 // ============================================================================
 
-const pulseKeyframes = `
-@keyframes docx-unsaved-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-`;
-
 const getIndicatorStyles = (
   variant: IndicatorVariant,
   position: IndicatorPosition,
@@ -177,8 +170,7 @@ const getIndicatorStyles = (
     alignItems: 'center',
     justifyContent: 'center',
     transition: 'all 0.2s ease',
-    animation:
-      hasUnsavedChanges && showPulse ? 'docx-unsaved-pulse 2s ease-in-out infinite' : 'none',
+    animation: hasUnsavedChanges && showPulse ? 'docx-pulse 2s ease-in-out infinite' : 'none',
   };
 
   // Position styles
@@ -256,19 +248,6 @@ export const UnsavedIndicator: React.FC<UnsavedIndicatorProps> = ({
   const { t } = useTranslation();
   const label = labelProp ?? t('unsaved.unsaved');
   const savedLabel = savedLabelProp ?? t('unsaved.saved');
-
-  // Inject keyframes if pulse is enabled - must be before early return
-  useEffect(() => {
-    if (!showPulse || !hasUnsavedChanges) return;
-
-    const styleId = 'docx-unsaved-pulse-keyframes';
-    if (!document.getElementById(styleId)) {
-      const styleElement = document.createElement('style');
-      styleElement.id = styleId;
-      styleElement.textContent = pulseKeyframes;
-      document.head.appendChild(styleElement);
-    }
-  }, [showPulse, hasUnsavedChanges]);
 
   // Don't render if saved and showWhenSaved is false
   if (!hasUnsavedChanges && !showWhenSaved) {

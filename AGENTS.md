@@ -145,6 +145,7 @@ Shared orchestration lives in core — the React adapter delegates through thin 
 - **Icons** — inline SVG in `components/ui/Icons.tsx`, NOT a font. `<MaterialSymbol name="x">` looks up `iconMap`; missing → renders raw text. Add SVG paths from fonts.google.com/icons.
 - **Tailwind scope** — library scoped to `.ep-root`. Painter output isn't always protected → use inline styles on painted elements.
 - **Focus stealing** — any mousedown that bubbles to PM moves caret. Dropdown/dialog mousedown needs `stopPropagation()`.
+- **Motion** — new animation keyframes are defined in `packages/core/src/styles/editor.css` (single source) and referenced by name from components; extend the `prefers-reduced-motion: reduce` block at the end of that file whenever a new animation/transition lands so playback collapses while state stays intact. Keyframes defined locally in an adapter (or injected at runtime) are invisible to that block.
 - **No `require()`** — ESM only.
 
 OOXML reference: `reference/quick-ref/wordprocessingml.md`, `themes-colors.md`; schemas in `reference/ecma-376/part1/schemas/`. PDFs in `reference/ecma-376/` are gitignored — run `bun run reference:fetch` once when you need them.

@@ -39,13 +39,6 @@ export function DefaultLoadingIndicator(): React.ReactElement {
           animation: 'docx-spin 0.8s linear infinite',
         }}
       />
-      <style>
-        {`
-          @keyframes docx-spin {
-            to { transform: rotate(360deg); }
-          }
-        `}
-      </style>
       <div style={{ fontSize: '14px' }}>{t('errors.loadingDocument')}</div>
     </div>
   );
