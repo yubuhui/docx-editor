@@ -234,6 +234,7 @@ export function ImagePositionDialog({
       <div
         style={dialogStyle}
         onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
         role="dialog"
         aria-label={t('dialogs.imagePosition.title')}
       >

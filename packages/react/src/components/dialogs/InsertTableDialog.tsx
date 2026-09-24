@@ -426,6 +426,7 @@ export function InsertTableDialog({
         className="docx-insert-table-dialog"
         style={DIALOG_CONTENT_STYLE}
         tabIndex={-1}
+        onMouseDown={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="docx-insert-table-dialog-header" style={DIALOG_HEADER_STYLE}>

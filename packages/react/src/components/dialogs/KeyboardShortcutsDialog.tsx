@@ -258,6 +258,7 @@ export const KeyboardShortcutsDialog: React.FC<KeyboardShortcutsDialogProps> = (
         }}
         role="dialog"
         aria-label={t('dialogs.keyboardShortcuts.ariaLabel')}
+        onMouseDown={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div

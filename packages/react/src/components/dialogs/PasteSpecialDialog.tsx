@@ -389,6 +389,7 @@ export const PasteSpecialDialog: React.FC<PasteSpecialDialogProps> = ({
       style={getDialogStyle()}
       role="dialog"
       aria-label={t('dialogs.pasteSpecial.title')}
+      onMouseDown={(e) => e.stopPropagation()}
     >
       {/* Header */}
       <div

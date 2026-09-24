@@ -496,7 +496,11 @@ export function HyperlinkDialog({
       aria-modal="true"
       aria-labelledby="hyperlink-dialog-title"
     >
-      <div className="docx-hyperlink-dialog" style={DIALOG_CONTENT_STYLE}>
+      <div
+        className="docx-hyperlink-dialog"
+        style={DIALOG_CONTENT_STYLE}
+        onMouseDown={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="docx-hyperlink-dialog-header" style={DIALOG_HEADER_STYLE}>
           <h2 id="hyperlink-dialog-title" style={DIALOG_TITLE_STYLE}>

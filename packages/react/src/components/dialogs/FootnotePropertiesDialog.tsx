@@ -174,7 +174,11 @@ export function FootnotePropertiesDialog({
 
   return (
     <div style={overlayStyle} onClick={onClose}>
-      <div style={dialogStyle} onClick={(e) => e.stopPropagation()}>
+      <div
+        style={dialogStyle}
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+      >
         <h3 style={{ margin: '0 0 16px', fontSize: 16 }}>
           {t('dialogs.footnoteProperties.title')}
         </h3>

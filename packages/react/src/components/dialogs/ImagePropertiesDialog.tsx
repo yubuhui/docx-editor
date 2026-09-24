@@ -191,6 +191,7 @@ export function ImagePropertiesDialog({
       <div
         style={dialogStyle}
         onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
         role="dialog"
         aria-label={t('dialogs.imageProperties.title')}
       >

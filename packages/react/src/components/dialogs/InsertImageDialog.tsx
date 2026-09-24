@@ -528,6 +528,7 @@ export function InsertImageDialog({
         className="docx-insert-image-dialog"
         style={DIALOG_CONTENT_STYLE}
         tabIndex={-1}
+        onMouseDown={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="docx-insert-image-dialog-header" style={DIALOG_HEADER_STYLE}>

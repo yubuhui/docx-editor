@@ -763,7 +763,11 @@ export function InsertSymbolDialog({
       aria-modal="true"
       aria-labelledby="insert-symbol-dialog-title"
     >
-      <div className="docx-insert-symbol-dialog" style={DIALOG_CONTENT_STYLE}>
+      <div
+        className="docx-insert-symbol-dialog"
+        style={DIALOG_CONTENT_STYLE}
+        onMouseDown={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="docx-insert-symbol-dialog-header" style={DIALOG_HEADER_STYLE}>
           <h2 id="insert-symbol-dialog-title" style={DIALOG_TITLE_STYLE}>

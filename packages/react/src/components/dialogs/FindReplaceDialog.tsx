@@ -561,6 +561,7 @@ export function FindReplaceDialog({
         role="dialog"
         aria-modal="false"
         aria-labelledby="find-replace-dialog-title"
+        onMouseDown={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="docx-find-replace-dialog-header" style={DIALOG_HEADER_STYLE}>
