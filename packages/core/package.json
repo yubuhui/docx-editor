@@ -489,6 +489,9 @@
       "utils/fontOptions": [
         "./dist/utils/fontOptions.d.ts"
       ],
+      "utils/legalDocValidation": [
+        "./dist/utils/legalDocValidation.d.ts"
+      ],
       "utils/headingCollector": [
         "./dist/utils/headingCollector.d.ts"
       ],

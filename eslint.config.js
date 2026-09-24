@@ -257,6 +257,16 @@ export default [
     },
   },
 
+  // examples/vite/App.tsx is the React demo host (E2E hooks + demo chrome:
+  // locale switch, bundled sample documents). The default 1000 cap is just
+  // under its formatted size; modest headroom while a real split is planned.
+  {
+    files: ['examples/vite/src/App.tsx'],
+    rules: {
+      'max-lines': ['error', { max: 1100, skipBlankLines: false, skipComments: false }],
+    },
+  },
+
   // Agent-use framework-agnostic surface — top-level utilities + tools/,
   // ai-sdk/ (excluding the per-framework entry files), i18n/, __tests__/.
   // TODO: drop the `ignores` list once task §9 migrates the React hooks
