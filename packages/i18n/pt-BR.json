@@ -83,7 +83,9 @@
     "imagePropertiesShortcut": "Propriedades da imagem (texto alternativo, borda)...",
     "clearFormatting": "Limpar formatação",
     "commentsAndChanges": null,
-    "moreItems": null
+    "moreItems": null,
+    "formatPainterCopy": null,
+    "formatPainterPaste": null
   },
   "alignment": {
     "alignLeft": "Alinhar à esquerda",
@@ -611,7 +613,8 @@
       "makeFormal": "Tornar formal",
       "makeCasual": "Tornar informal",
       "custom": "Personalizado"
-    }
+    },
+    "comment": null
   },
   "documentOutline": {
     "ariaLabel": "Estrutura do documento",

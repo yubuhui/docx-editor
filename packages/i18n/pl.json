@@ -83,7 +83,9 @@
     "imagePropertiesShortcut": "Właściwości obrazu (tekst alternatywny, obramowanie)...",
     "clearFormatting": "Wyczyść formatowanie",
     "commentsAndChanges": null,
-    "moreItems": null
+    "moreItems": null,
+    "formatPainterCopy": null,
+    "formatPainterPaste": null
   },
   "alignment": {
     "alignLeft": "Wyrównaj do lewej",
@@ -611,7 +613,8 @@
       "makeFormal": "Zmień na formalny",
       "makeCasual": "Zmień na potoczny",
       "custom": "Własne"
-    }
+    },
+    "comment": null
   },
   "documentOutline": {
     "ariaLabel": "Konspekt dokumentu",

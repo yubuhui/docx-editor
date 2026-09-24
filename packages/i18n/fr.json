@@ -83,7 +83,9 @@
     "imagePropertiesShortcut": "Propriétés de l'image... (description, bordure)",
     "clearFormatting": "Effacer la mise en forme",
     "commentsAndChanges": null,
-    "moreItems": null
+    "moreItems": null,
+    "formatPainterCopy": null,
+    "formatPainterPaste": null
   },
   "alignment": {
     "alignLeft": "Aligner à gauche",
@@ -611,7 +613,8 @@
       "makeFormal": "Rendre formel",
       "makeCasual": "Rendre informel",
       "custom": "Personnalisé"
-    }
+    },
+    "comment": null
   },
   "documentOutline": {
     "ariaLabel": "Plan du document",

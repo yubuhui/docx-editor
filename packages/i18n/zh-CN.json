@@ -43,9 +43,9 @@
     "help": "帮助",
     "reportIssue": "反馈问题",
     "watermark": "水印",
-    "break": null,
-    "sectionBreakContinuous": null,
-    "sectionBreakNextPage": null
+    "break": "分隔符",
+    "sectionBreakContinuous": "分节符（连续）",
+    "sectionBreakNextPage": "分节符（下一页）"
   },
   "formattingBar": {
     "groups": {
@@ -84,8 +84,8 @@
     "clearFormatting": "清除格式",
     "formatPainterCopy": "复制格式 (Ctrl+Shift+C)",
     "formatPainterPaste": "粘贴格式 (Ctrl+Shift+V)",
-    "commentsAndChanges": null,
-    "moreItems": null
+    "commentsAndChanges": "评论与修订",
+    "moreItems": "另有 {count} 项"
   },
   "alignment": {
     "alignLeft": "左对齐",
@@ -111,7 +111,7 @@
     "double": "双倍行距",
     "lineSpacingTitle": "行距: {label}",
     "paragraphSpacing": "段间距",
-    "label": null
+    "label": "行距"
   },
   "styles": {
     "selectAriaLabel": "选择段落样式",
@@ -127,8 +127,8 @@
     "sansSerif": "Sans Serif",
     "serif": "Serif",
     "monospace": "Monospace",
-    "other": null,
-    "documentFonts": null
+    "other": "其他",
+    "documentFonts": "文档字体"
   },
   "fontSize": {
     "decrease": "减小字号",
@@ -138,9 +138,9 @@
   },
   "zoom": {
     "ariaLabel": "缩放: {label}",
-    "zoomIn": null,
-    "zoomLevel": null,
-    "zoomOut": null
+    "zoomIn": "放大",
+    "zoomLevel": "缩放级别",
+    "zoomOut": "缩小"
   },
   "colorPicker": {
     "ariaLabel": "{type} 颜色选择器",
@@ -613,7 +613,8 @@
       "makeFormal": "正式化",
       "makeCasual": "口语化",
       "custom": "自定义"
-    }
+    },
+    "comment": "添加批注"
   },
   "documentOutline": {
     "ariaLabel": "文档大纲",
@@ -692,7 +693,7 @@
       "gridTable4Accent5": "网格表 4 强调色 5",
       "gridTable4Accent6": "网格表 4 强调色 6"
     },
-    "selectTable": null
+    "selectTable": "选择整个表格"
   },
   "tableAdvanced": {
     "verticalAlignment": "垂直对齐",
@@ -854,21 +855,21 @@
     "deleteImage": "删除图片",
     "imageProperties": "图片属性",
     "rotate": "旋转",
-    "replaceImage": null
+    "replaceImage": "替换图片…"
   },
   "revisions": {
-    "cellDeleted": null,
-    "cellInserted": null,
-    "cellMerged": null,
-    "cellPropertiesChanged": null,
-    "paragraphMarkDeleted": null,
-    "paragraphMarkInserted": null,
-    "paragraphPropertiesChanged": null,
-    "rowDeleted": null,
-    "rowInserted": null,
-    "rowPropertiesChanged": null,
-    "tablePropertiesChanged": null,
-    "tableDeleted": null,
-    "tableInserted": null
+    "cellDeleted": "删除的单元格",
+    "cellInserted": "插入的单元格",
+    "cellMerged": "合并的单元格",
+    "cellPropertiesChanged": "更改了单元格属性",
+    "paragraphMarkDeleted": "删除的段落标记",
+    "paragraphMarkInserted": "插入的段落标记",
+    "paragraphPropertiesChanged": "更改了段落属性",
+    "rowDeleted": "删除的行",
+    "rowInserted": "插入的行",
+    "rowPropertiesChanged": "更改了行属性",
+    "tablePropertiesChanged": "更改了表格属性",
+    "tableDeleted": "删除的表格",
+    "tableInserted": "插入的表格"
   }
 }

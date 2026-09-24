@@ -83,7 +83,9 @@
     "imagePropertiesShortcut": "מאפייני תמונה",
     "clearFormatting": "נקה עיצוב",
     "commentsAndChanges": null,
-    "moreItems": null
+    "moreItems": null,
+    "formatPainterCopy": null,
+    "formatPainterPaste": null
   },
   "alignment": {
     "alignLeft": "יישור לשמאל",
@@ -611,7 +613,8 @@
       "makeFormal": "הפוך לרשמי",
       "makeCasual": "הפוך ללא רשמי",
       "custom": "מותאם אישית"
-    }
+    },
+    "comment": null
   },
   "documentOutline": {
     "ariaLabel": "מתווה המסמך",

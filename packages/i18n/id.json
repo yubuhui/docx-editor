@@ -83,7 +83,9 @@
     "imagePropertiesShortcut": "Properti gambar (alt text, border)...",
     "clearFormatting": "Hapus Pemformatan",
     "commentsAndChanges": "Komentar & Perubahan",
-    "moreItems": "{count} item lainnya"
+    "moreItems": "{count} item lainnya",
+    "formatPainterCopy": null,
+    "formatPainterPaste": null
   },
   "alignment": {
     "alignLeft": "Rata Kiri",
@@ -626,7 +628,8 @@
       "makeFormal": "Jadikan Formal",
       "makeCasual": "Jadikan Santai",
       "custom": "Kustom"
-    }
+    },
+    "comment": null
   },
   "documentOutline": {
     "ariaLabel": "Struktur dokumen",

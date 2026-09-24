@@ -628,7 +628,8 @@
       "makeFormal": "Make Formal",
       "makeCasual": "Make Casual",
       "custom": "Custom"
-    }
+    },
+    "comment": "Comment"
   },
   "documentOutline": {
     "ariaLabel": "Document outline",

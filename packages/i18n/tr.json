@@ -83,7 +83,9 @@
     "imagePropertiesShortcut": "Görsel özellikleri (alternatif metin, kenarlık)...",
     "clearFormatting": "Biçimlendirmeyi temizle",
     "commentsAndChanges": null,
-    "moreItems": null
+    "moreItems": null,
+    "formatPainterCopy": null,
+    "formatPainterPaste": null
   },
   "alignment": {
     "alignLeft": "Sola hizala",
@@ -611,7 +613,8 @@
       "makeFormal": "Resmi yap",
       "makeCasual": "Samimi yap",
       "custom": "Özel"
-    }
+    },
+    "comment": null
   },
   "documentOutline": {
     "ariaLabel": "Belge ana hattı",

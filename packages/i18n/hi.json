@@ -83,7 +83,9 @@
     "imagePropertiesShortcut": "चित्र की विशेषताएँ (ऑल्ट टेक्स्ट, बॉर्डर)...",
     "clearFormatting": "प्रारूपण साफ करें",
     "commentsAndChanges": null,
-    "moreItems": null
+    "moreItems": null,
+    "formatPainterCopy": null,
+    "formatPainterPaste": null
   },
   "alignment": {
     "alignLeft": "बाएं संरेखित करें",
@@ -611,7 +613,8 @@
       "makeFormal": "औपचारिक बनाएं",
       "makeCasual": "अनौपचारिक बनाएं",
       "custom": "कस्टम"
-    }
+    },
+    "comment": null
   },
   "documentOutline": {
     "ariaLabel": "दस्तावेज़ की रूपरेखा",
