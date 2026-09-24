@@ -5,12 +5,11 @@
  * author/date become a single `replacement` entry (matches Word's UX
  * for replace ops).
  *
- * Pure function — no React, no Vue, no side effects. Single O(N) walk
+ * Pure function — no framework imports, no side effects. Single O(N) walk
  * over text nodes. Consumers building custom sidebars should prefer the
- * adapter-specific wrappers (`useTrackedChanges` in
- * `@eigenpal/docx-editor-react/hooks` and
- * `@eigenpal/docx-editor-vue/composables`), which add the memoization
- * and reactivity layer. Reach for the core function directly for
+ * adapter wrapper (`useTrackedChanges` in
+ * `@eigenpal/docx-editor-react/hooks`), which adds the memoization
+ * layer. Reach for the core function directly for
  * server-side analysis or test fixtures.
  *
  * @packageDocumentation

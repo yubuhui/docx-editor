@@ -5,7 +5,6 @@ const root = resolve(import.meta.dirname, '..');
 
 const entries = {
   react: collectNamedExports(resolve(root, 'packages/react/src/index.ts')),
-  vue: collectNamedExports(resolve(root, 'packages/vue/src/index.ts')),
   reactUi: collectNamedExports(resolve(root, 'packages/react/src/ui.ts')),
   reactPluginApi: collectNamedExports(resolve(root, 'packages/react/src/plugin-api/index.ts')),
   agentsReact: collectNamedExports(resolve(root, 'packages/agents/src/react.ts')),
@@ -13,8 +12,8 @@ const entries = {
 };
 
 const required = {
-  'shared adapter root contract': {
-    entries: ['react', 'vue'],
+  'React adapter root contract': {
+    entries: ['react'],
     names: [
       'DocxEditor',
       'DocxEditorProps',

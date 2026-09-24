@@ -50,16 +50,15 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Install Playwright (chromium)
-        run: npx playwright install --with-deps chromium
+        run: bunx playwright install --with-deps chromium
 
       - name: Run perf suite
         continue-on-error: true # comment-only: a slow run (or assertion miss) must not fail the job
         env:
           PERF_EMIT_JSON: '1'
-          PERF_REACT_ONLY: '1'
           PERF_OUT_DIR: test-results/perf
         run: |
-          npx playwright test "$PERF_SPEC" \
+          bunx playwright test "$PERF_SPEC" \
             --project=chromium --workers=1 --retries=0 --timeout=120000
 
       - name: Compare against baseline

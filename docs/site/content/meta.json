@@ -34,7 +34,6 @@
     "agents/word-js-api",
     "---Reference---",
     "react",
-    "vue",
     "core",
     "i18n",
     "plugins"

@@ -8,14 +8,12 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# Parity gate — fast (<1s). Blocks drift between the React and Vue adapter
-# exports before it reaches CI. (i18n keys are no longer a parity concern —
-# both adapters read the same @eigenpal/docx-editor-i18n package.)
-# Spec: openspec/changes/vue-editor-robust-implementation/specs/vue-react-parity/spec.md
-echo "Running parity gates..."
+# UI gates — fast (<1s). Guards the shared-stylesheet single-source and the
+# public docs surface before they reach CI.
+echo "Running UI gates..."
 bun run check:parity
 if [ $? -ne 0 ]; then
-  echo "Parity gates failed. Fix the drift or document it in notes/intentional-export-divergence.md."
+  echo "UI gates failed. Fix the drifted check before committing."
   exit 1
 fi
 

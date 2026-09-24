@@ -49,15 +49,14 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Install Playwright (chromium)
-        run: npx playwright install --with-deps chromium
+        run: bunx playwright install --with-deps chromium
 
       - name: Capture baseline
         env:
           PERF_EMIT_JSON: '1'
-          PERF_REACT_ONLY: '1'
           PERF_OUT_DIR: e2e/perf-baselines
         run: |
-          npx playwright test "$PERF_SPEC" \
+          bunx playwright test "$PERF_SPEC" \
             --project=chromium --workers=1 --retries=0 --timeout=120000
 
       - name: Commit refreshed baseline

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { examples } from './config';
 
 interface ExampleSwitcherProps {
-  current: 'Vite' | 'Next.js' | 'Remix' | 'Astro' | 'Vue';
+  current: 'Vite' | 'Next.js' | 'Remix' | 'Astro';
 }
 
 const containerBaseStyle: React.CSSProperties = {
@@ -188,7 +188,11 @@ export function ExampleSwitcher({ current }: ExampleSwitcherProps) {
                 dangerouslySetInnerHTML={{ __html: example.icon }}
               />
               {example.name}
-              <span style={{ color: 'var(--doc-text-subtle)', marginLeft: 'auto', fontSize: '11px' }}>source</span>
+              <span
+                style={{ color: 'var(--doc-text-subtle)', marginLeft: 'auto', fontSize: '11px' }}
+              >
+                source
+              </span>
             </a>
           ))}
           <div style={{ height: '1px', background: 'var(--doc-border)', margin: '4px 0' }} />

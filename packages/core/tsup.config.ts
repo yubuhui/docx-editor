@@ -8,8 +8,8 @@ export default defineConfig([
       'core-plugins': 'src/core-plugins/index.ts',
       mcp: 'src/mcp/index.ts',
       // Subpath entries — stable public surface at directory-boundary
-      // granularity, so framework adapters outside packages/{react,vue}
-      // can consume internals without reaching into src/.
+      // granularity, so adapter packages can consume internals without
+      // reaching into src/.
       'prosemirror/index': 'src/prosemirror/index.ts',
       'prosemirror/extensions/index': 'src/prosemirror/extensions/index.ts',
       'prosemirror/conversion/index': 'src/prosemirror/conversion/index.ts',

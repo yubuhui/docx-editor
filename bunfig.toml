@@ -1,5 +1,5 @@
 [test]
-# Exclude Playwright e2e tests - they should be run with `npx playwright test`
+# Exclude Playwright e2e tests - they should be run with `bunx playwright test`
 root = "./packages"
 
 [install]

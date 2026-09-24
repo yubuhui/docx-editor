@@ -4,8 +4,7 @@
  * underline field in cell 1, matching Word. Before the painter mirror the label
  * rendered on the wrong (left) side.
  *
- * React demo (port 5173). The painter is shared core, so Vue is covered by
- * e2e/tests/vue/issue-734-rtl-table.spec.ts with the same assertion.
+ * React demo (port 5173); the painter is shared core.
  */
 import { test, expect, type Page } from '@playwright/test';
 import { EditorPage } from '../helpers/editor-page';

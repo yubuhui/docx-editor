@@ -1,6 +1,6 @@
 #!/bin/bash
-# Start all 5 framework example dev servers in parallel (React + Vue via
-# root `bun run dev`, plus Next.js / Remix / Astro).
+# Start the framework example dev servers in parallel (React via the root
+# `bun run dev`, plus Next.js / Remix / Astro).
 # Auto-installs dependencies if node_modules is missing.
 
 set -e
@@ -27,7 +27,6 @@ export ENABLE_FRAMEWORK_SWITCHER=true
 echo ""
 echo "Starting all dev servers..."
 echo "  React (Vite): http://localhost:5173"
-echo "  Vue (Vite):   http://localhost:5174"
 echo "  Next.js:      http://localhost:3000"
 echo "  Remix:        http://localhost:3001"
 echo "  Astro:        http://localhost:4321"

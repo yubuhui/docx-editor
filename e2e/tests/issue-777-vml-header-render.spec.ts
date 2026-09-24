@@ -1,8 +1,7 @@
 /**
  * Issue #777 (render-level) — a VML header logo must actually paint, and an
  * anchored image with `wp:positionH align="left"` must render left-aligned, not
- * centered. Loads a synthetic fixture with both. Core fix → React + Vue (a Vue
- * twin lives under e2e/tests/vue/).
+ * centered. Loads a synthetic fixture with both. The painter is shared core.
  */
 
 import { test, expect } from '@playwright/test';

@@ -1,17 +1,17 @@
-import { expect, forEachAdapter } from '../parity-fixture';
+import { test, expect } from '@playwright/test';
+import { EditorPage } from '../helpers/editor-page';
 
-// The watermark dialog's preset list is driven by the `watermarkPresets` prop
-// in both adapters. Both demos pass a hardcoded custom list, so those phrases
-// must replace the built-in MS Word defaults in either editor.
-forEachAdapter(
-  'smoke: watermarkPresets prop fills the preset dropdown',
-  async (adapter, { page }) => {
-    await page.goto(`${adapter.baseUrl}/?e2e=1`);
-    await page.waitForSelector(adapter.readySelector, { timeout: 25000 });
-    await expect(page.locator('.paged-editor__pages')).toBeVisible();
+// The watermark dialog's preset list is driven by the `watermarkPresets` prop.
+// The demo passes a hardcoded custom list, so those phrases must replace the
+// built-in MS Word defaults.
+test.describe('watermark presets', () => {
+  test('watermarkPresets prop fills the preset dropdown', async ({ page }) => {
+    const editor = new EditorPage(page);
+    await editor.goto();
+    await editor.waitForReady();
 
-    // Insert menu → Watermark opens the dialog (same path in both adapters). The
-    // demo auto-loads a fixture on mount; the React menu bar enables once it does.
+    // Insert menu → Watermark opens the dialog. The demo auto-loads a fixture
+    // on mount; the menu bar enables once it does.
     const insert = page.getByRole('button', { name: /^Insert$/ });
     await expect(insert).toBeEnabled({ timeout: 25000 });
     await insert.click();
@@ -29,5 +29,5 @@ forEachAdapter(
     const presetSelect = dialog.locator('select').first();
     const options = await presetSelect.locator('option').allInnerTexts();
     expect(options).toEqual(['—', 'SAMPLE', 'DEMO ONLY', 'PREVIEW', 'NOT FOR DISTRIBUTION']);
-  }
-);
+  });
+});

@@ -54,10 +54,9 @@ import type {
 export type { ParagraphHighlightOptions, ScrollToParaIdOptions };
 
 /**
- * Agent-bridge contract every editor adapter (React, Vue, future) MUST satisfy.
+ * Agent-bridge contract every editor adapter MUST satisfy.
  * Versioning: additions are coordinated minor bumps across the fixed group;
- * signature changes / removals are major. See
- * `openspec/changes/vue-editor-robust-implementation/design.md` Decision 18.
+ * signature changes / removals are major.
  */
 export interface EditorRefLike {
   getDocument(): unknown | null;

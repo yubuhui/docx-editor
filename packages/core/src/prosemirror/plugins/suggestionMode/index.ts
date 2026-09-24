@@ -84,10 +84,9 @@ function markComposedAsInsertion(
 /**
  * Create the suggestion-mode ProseMirror plugin. **Must be mounted on
  * the editor view for `setSuggestionMode` and `toggleSuggestionMode`
- * to do anything** — both adapters (`@eigenpal/docx-editor-react`,
- * `@eigenpal/docx-editor-vue`) auto-mount this inside the `DocxEditor`
- * component, so consumers using the bundled components don't need to
- * register it themselves.
+ * to do anything** — the React adapter (`@eigenpal/docx-editor-react`)
+ * auto-mounts this inside the `DocxEditor` component, so consumers using
+ * the bundled component don't need to register it themselves.
  *
  * When active, typed text gets the `insertion` mark, deleted text gets
  * the `deletion` mark (text stays in the doc; the painter strikes it
